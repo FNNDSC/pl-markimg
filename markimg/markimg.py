@@ -122,12 +122,12 @@ class Markimg(ChrisApp):
         """
         
         
-        self.add_argument(  '--inputFileFilter','-f',
-                            dest         = 'inputFileFilter',
+        self.add_argument(  '--inputJsonName','-j',
+                            dest         = 'inputJsonName',
                             type         = str,
                             optional     = True,
                             help         = 'Input file filter',
-                            default      = '**/*.json')
+                            default      = 'prediction.json')
                             
         self.add_argument(  '--inputImageName','-i',
                             dest         = 'inputImageName',
@@ -185,11 +185,13 @@ class Markimg(ChrisApp):
         print("")
         
         # Read json file first
-        str_glob = '%s/%s' % (options.inputdir,options.inputFileFilter)
+        str_glob = '%s/**/%s' % (options.inputdir,options.inputJsonName)
 
         l_datapath = glob.glob(str_glob, recursive=True)
         
         jsonFilePath =l_datapath[0]
+        
+        print(f"Reading JSON file from {jsonFilePath}")
         
         f = open(jsonFilePath, 'r')
         data = json.load(f)
@@ -206,7 +208,7 @@ class Markimg(ChrisApp):
                     if dir == row:
                         file_path = os.path.join(root,image_path)
 
-            print(file_path)
+            print(f"Reading input image from {file_path}")
             image = cv2.imread(file_path) 
             
                
