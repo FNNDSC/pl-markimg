@@ -200,10 +200,14 @@ class Markimg(ChrisApp):
             # Read image according to "key"
             image_path = os.path.join(row,options.inputImageName)
             
-            glob_str = '%s/**/%s' % (options.inputdir,image_path)
-            l_data = glob.glob(glob_str, recursive=True)
-            print(l_data)
-            image = cv2.imread(l_data[0]) 
+            file_path = ""
+            for root, dirs, files in os.walk(options.inputdir):
+                for dir in dirs:
+                    if dir == row:
+                        file_path = os.path.join(root,image_path)
+
+            print(file_path)
+            image = cv2.imread(file_path) 
             
                
             items = data[row]["landmarks"]
