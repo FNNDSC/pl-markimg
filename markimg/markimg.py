@@ -209,7 +209,9 @@ class Markimg(ChrisApp):
                         file_path = os.path.join(root,image_path)
 
             print(f"Reading input image from {file_path}")
-            image = cv2.imread(file_path) 
+            image = cv2.imread(file_path)
+            
+            resized_image = cv2.resize(image,(1024,512),interpolation = cv2.INTER_AREA)
             
                
             items = data[row]["landmarks"]
@@ -234,7 +236,7 @@ class Markimg(ChrisApp):
                 # Measure distance
                 self.measureLine(d_lines[item],options.textColor,options.textHeight)
                 
-            plt.imshow(image)      
+            plt.imshow(resized_image)      
             plt.savefig(os.path.join(options.outputdir,row+".png"))
             plt.clf()
 
