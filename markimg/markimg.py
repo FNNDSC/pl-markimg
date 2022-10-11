@@ -9,6 +9,13 @@
 #
 
 from chrisapp.base import ChrisApp
+import matplotlib.pyplot as plt
+import numpy as np
+import json
+import math
+import os
+import glob
+import cv2
 
 
 Gstr_title = r"""
@@ -113,6 +120,56 @@ class Markimg(ChrisApp):
         Define the CLI arguments accepted by this plugin app.
         Use self.add_argument to specify a new app argument.
         """
+        
+        
+        self.add_argument(  '--inputFileFilter','-f',
+                            dest         = 'inputFileFilter',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = '**/*.json')
+                            
+        self.add_argument(  '--inputImageName','-i',
+                            dest         = 'inputImageName',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 'leg.png')
+                            
+        self.add_argument(  '--pointMarker','-p',
+                            dest         = 'pointMarker',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 'x')
+                            
+        self.add_argument(  '--pointColor','-c',
+                            dest         = 'pointColor',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 'red')
+                            
+        self.add_argument(  '--lineColor','-l',
+                            dest         = 'lineColor',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 'red')
+                            
+        self.add_argument(  '--textColor','-t',
+                            dest         = 'textColor',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 'white')
+                            
+        self.add_argument(  '--textHeight','-s',
+                            dest         = 'textHeight',
+                            type         = int,
+                            optional     = True,
+                            help         = 'Input file filter',
+                            default      = 10)
 
     def run(self, options):
         """
@@ -121,13 +178,33 @@ class Markimg(ChrisApp):
         print(Gstr_title)
         print('Version: %s' % self.get_version())
         
+        # Output the space of CLI
+        d_options = vars(options)
+        for k,v in d_options.items():
+            print("%20s: %-40s" % (k, v))
+        print("")
         
-        # Read json file firstf = open('/home/sandip/prediction.json', 'r')
+        # Read json file first
+        str_glob = '%s/%s' % (options.inputdir,options.inputFileFilter)
+
+        l_datapath = glob.glob(str_glob, recursive=True)
+        
+        jsonFilePath =l_datapath[0]
+        
+        f = open(jsonFilePath, 'r')
+        data = json.load(f)
+        
         d_landmarks = {}
         d_lines = {}
         for row in data:
             # Read image according to "key"
-            image = cv2.imread('/home/sandip/dcm-out/'+row+"/leg.png") 
+            image_path = os.path.join(row,options.inputImageName)
+            
+            glob_str = '%s/**/%s' % (options.inputdir,image_path)
+            l_data = glob.glob(glob_str, recursive=True)
+            
+            image = cv2.imread(l_data[0]) 
+            print(os.path.join(l_data[0]))
                
             items = data[row]["landmarks"]
             for item in items:
@@ -135,7 +212,7 @@ class Markimg(ChrisApp):
                     point = [item[i]["x"],item[i]["y"]]
                     d_landmarks[i] = point            
                     # Plot points
-                    drawPoint(point,POINT_MARKER,POINT_COLOR)   
+                    self.drawPoint(point,options.pointMarker,options.pointColor)   
                      
             items = data[row]["drawLine"]
             for item in items:
@@ -144,16 +221,16 @@ class Markimg(ChrisApp):
                     end = d_landmarks[item[i]["end"]]
                     d_lines[i] = [start,end]            
                     # Draw lines
-                    drawLine(start,end,LINE_COLOR) 
+                    self.drawLine(start,end,options.lineColor) 
                        
             items = data[row]["measureLine"]
             for item in items:        
                 # Measure distance
-                measureLine(d_lines[item],TEXT_COLOR,TEXT_HEIGHT)
+                self.measureLine(d_lines[item],options.textColor,options.textHeight)
                 
-                   
-            plt.imshow(image)
-            plt.show()
+            plt.imshow(image)      
+            plt.savefig(os.path.join(options.outputdir,row+".png"))
+            plt.clf()
 
     def show_man_page(self):
         """
