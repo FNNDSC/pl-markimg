@@ -255,13 +255,14 @@ class Markimg(ChrisApp):
         X.append(start[0])
         X.append(end[0])
         Y.append(start[1])
-        Y.append(end[1])    # draw connecting lines
+        Y.append(end[1])    
+        # draw connecting lines
         plt.plot(X,Y, color= color,linewidth=1)
         
     def measureLine(self,line,color,height):
         P1 = line[0]
         P2 = line[1]    
-        distance = round(math.dist(P1,P2),0)    
+        distance = round(math.dist(P1,P2))    
         x = (P1[0]+P2[0])/2
         y = P1[1] - height    
         plt.text(x,y,distance, color=color)
