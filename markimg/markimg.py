@@ -133,42 +133,42 @@ class Markimg(ChrisApp):
                             dest         = 'inputImageName',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Name of the png file',
                             default      = 'leg.png')
                             
         self.add_argument(  '--pointMarker','-p',
                             dest         = 'pointMarker',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Point marker',
                             default      = 'x')
                             
         self.add_argument(  '--pointColor','-c',
                             dest         = 'pointColor',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Color of point marker',
                             default      = 'red')
                             
         self.add_argument(  '--lineColor','-l',
                             dest         = 'lineColor',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Color of the line to be drawn',
                             default      = 'red')
                             
         self.add_argument(  '--textColor','-t',
                             dest         = 'textColor',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Color of text',
                             default      = 'white')
                             
         self.add_argument(  '--textHeight','-s',
                             dest         = 'textHeight',
                             type         = int,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Spatial distance of the text wrt x-axis of a line',
                             default      = 10)
 
     def run(self, options):
@@ -202,9 +202,9 @@ class Markimg(ChrisApp):
             
             glob_str = '%s/**/%s' % (options.inputdir,image_path)
             l_data = glob.glob(glob_str, recursive=True)
-            
+            print(l_data)
             image = cv2.imread(l_data[0]) 
-            print(os.path.join(l_data[0]))
+            
                
             items = data[row]["landmarks"]
             for item in items:
