@@ -198,6 +198,7 @@ class Markimg(ChrisApp):
         
         d_landmarks = {}
         d_lines = {}
+        d_lengths = {}
         for row in data:
             # Read image according to "key"
             image_path = os.path.join(row,options.inputImageName)
@@ -234,10 +235,18 @@ class Markimg(ChrisApp):
             items = data[row]["measureLine"]
             for item in items:        
                 # Measure distance
-                self.measureLine(d_lines[item],options.textColor,options.textHeight)
+                length = self.measureLine(d_lines[item],options.textColor,options.textHeight)
+                d_lengths[item] = length
                 
+            
+            
+            leftLeg = self.printSum(800,460,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length")
+            rightLeg = self.printSum(800,480,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length")
+            self.printDiff(800,500,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff")
+            plt.tick_params(left = False, right = False , labelleft = False ,
+                labelbottom = False, bottom = False)
             plt.imshow(resized_image)      
-            plt.savefig(os.path.join(options.outputdir,row+".png"))
+            plt.savefig(os.path.join(options.outputdir,row+".png"),dpi=250,bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
 
     def show_man_page(self):
@@ -259,12 +268,25 @@ class Markimg(ChrisApp):
         # draw connecting lines
         plt.plot(X,Y, color= color,linewidth=1)
         
-    def measureLine(self,line,color,height):
+    def measureLine(self,line,color,height,unit='px'):
         P1 = line[0]
         P2 = line[1]    
-        distance = round(math.dist(P1,P2))    
+        distance = round(math.dist(P1,P2))
+        display_text = str(distance) + unit 
         x = (P1[0]+P2[0])/2
         y = P1[1] - height    
-        plt.text(x,y,distance, color=color)
+        plt.text(x,y,display_text, color=color,fontsize="xx-small")
+        return distance
         
+    def printDiff(self,x,y,val1,val2,color,unit,title,scaleFactor=1):
+        diff = abs(val1 - val2) * scaleFactor
+        display_text = title + "=" + str(diff) + unit
+        plt.text(x,y,display_text,color=color,fontsize="xx-small")
+        return diff
+        
+    def printSum(self,x,y,val1,val2,color,unit,title,scaleFactor=1):
+        sum = (val1 + val2) * scaleFactor
+        display_text = title + "=" + str(sum) + unit
+        plt.text(x,y,display_text,color=color,fontsize="xx-small")
+        return sum
          

@@ -6,7 +6,7 @@ with open(path.join(path.dirname(path.abspath(__file__)), 'README.rst')) as f:
 
 setup(
     name             = 'markimg',
-    version          = '0.1.6',
+    version          = '0.1.7',
     description      = 'An app to mark landmark points and lines on an input image',
     long_description = readme,
     author           = 'FNNDSC',
