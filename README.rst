@@ -34,6 +34,13 @@ Usage
 .. code::
 
     docker run --rm fnndsc/pl-markimg markimg
+        [-j|--inputJsonName <jsonFileName>]                         
+        [-i|--inputImageName <pngFileName>]                         
+        [-p|--pointMarker <pointMarker>]                            
+        [-c|--pointColor <pointColor>]                              
+        [-l|--lineColor <lineColor>]                                
+        [-t|--textColor <textColor>]                                
+        [-s|--textSize <textSize>]                                  
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -46,7 +53,32 @@ Arguments
 ~~~~~~~~~
 
 .. code::
-
+    [-j|--inputJsonName <jsonFileName>] 
+    The name of the input JSON file. Default is 'prection.json'
+        
+    [-i|--inputImageName <pngFileName>] 
+    The name of the input png file. Default is 'leg.png' 
+        
+    [-p|--pointMarker <pointMarker>]
+    A character that represents a point on the image. Default
+    is 'x'
+         
+    [-c|--pointColor <pointColor>] 
+    The color of the character representing points on the image.
+    Default is red
+        
+    [-l|--lineColor <lineColor>]
+    The color of the line drawn on the input image.
+    Default is red 
+        
+    [-t|--textColor <textColor>]
+    The color of the text placed on the input image.
+    Default is white
+        
+    [-s|--textSize <textSize>]
+    The size of the text on the input image.
+    Default is "xx-small" 
+            
     [-h] [--help]
     If specified, show help message and exit.
     
@@ -85,7 +117,7 @@ You need to specify input and output directories using the `-v` flag to `docker 
 
     docker run --rm -u $(id -u)                             \
         -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-        fnndsc/pl-markimg markimg                        \
+        fnndsc/pl-markimg markimg                           \
         /incoming /outgoing
 
 

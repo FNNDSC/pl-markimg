@@ -38,6 +38,13 @@ Gstr_synopsis = """
     SYNOPSIS
 
         docker run --rm fnndsc/pl-markimg markimg                       \\
+            [-j|--inputJsonName <jsonFileName>]                         \\
+            [-i|--inputImageName <pngFileName>]                         \\
+            [-p|--pointMarker <pointMarker>]                            \\
+            [-c|--pointColor <pointColor>]                              \\
+            [-l|--lineColor <lineColor>]                                \\
+            [-t|--textColor <textColor>]                                \\
+            [-s|--textSize <textSize>]                                  \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -62,6 +69,31 @@ Gstr_synopsis = """
         `markimg` ...
 
     ARGS
+        [-j|--inputJsonName <jsonFileName>] 
+        The name of the input JSON file. Default is 'prection.json'
+        
+        [-i|--inputImageName <pngFileName>] 
+        The name of the input png file. Default is 'leg.png' 
+        
+        [-p|--pointMarker <pointMarker>]
+        A character that represents a point on the image. Default
+        is 'x'
+         
+        [-c|--pointColor <pointColor>] 
+        The color of the character representing points on the image.
+        Default is red
+        
+        [-l|--lineColor <lineColor>]
+        The color of the line drawn on the input image.
+        Default is red 
+        
+        [-t|--textColor <textColor>]
+        The color of the text placed on the input image.
+        Default is white
+        
+        [-s|--textSize <textSize>]
+        The size of the text on the input image.
+        Default is "xx-small"         
 
         [-h] [--help]
         If specified, show help message and exit.
@@ -164,12 +196,12 @@ class Markimg(ChrisApp):
                             help         = 'Color of text',
                             default      = 'white')
                             
-        self.add_argument(  '--textHeight','-s',
-                            dest         = 'textHeight',
-                            type         = int,
+        self.add_argument(  '--textSize','-s',
+                            dest         = 'textSize',
+                            type         = str,
                             optional     = True,
-                            help         = 'Spatial distance of the text wrt x-axis of a line',
-                            default      = 10)
+                            help         = 'Size of the text displayed on image',
+                            default      = 'xx-small')
 
     def run(self, options):
         """
@@ -235,14 +267,14 @@ class Markimg(ChrisApp):
             items = data[row]["measureLine"]
             for item in items:        
                 # Measure distance
-                length = self.measureLine(d_lines[item],options.textColor,options.textHeight)
+                length = self.measureLine(d_lines[item],options.textColor,options.textSize)
                 d_lengths[item] = length
                 
             
             
-            leftLeg = self.printSum(800,460,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length")
-            rightLeg = self.printSum(800,480,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length")
-            self.printDiff(800,500,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff")
+            leftLeg = self.printSum(800,460,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length",options.textSize)
+            rightLeg = self.printSum(800,480,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length",options.textSize)
+            self.printDiff(800,500,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(resized_image)      
@@ -268,25 +300,25 @@ class Markimg(ChrisApp):
         # draw connecting lines
         plt.plot(X,Y, color= color,linewidth=1)
         
-    def measureLine(self,line,color,height,unit='px'):
+    def measureLine(self,line,color,size,unit='px'):
         P1 = line[0]
         P2 = line[1]    
         distance = round(math.dist(P1,P2))
         display_text = str(distance) + unit 
         x = (P1[0]+P2[0])/2
-        y = P1[1] - height    
-        plt.text(x,y,display_text, color=color,fontsize="xx-small")
+        y = P1[1] - 10    
+        plt.text(x,y,display_text, color=color,fontsize=size)
         return distance
         
-    def printDiff(self,x,y,val1,val2,color,unit,title,scaleFactor=1):
+    def printDiff(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
         diff = abs(val1 - val2) * scaleFactor
         display_text = title + "=" + str(diff) + unit
-        plt.text(x,y,display_text,color=color,fontsize="xx-small")
+        plt.text(x,y,display_text,color=color,fontsize=size)
         return diff
         
-    def printSum(self,x,y,val1,val2,color,unit,title,scaleFactor=1):
+    def printSum(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
         sum = (val1 + val2) * scaleFactor
         display_text = title + "=" + str(sum) + unit
-        plt.text(x,y,display_text,color=color,fontsize="xx-small")
+        plt.text(x,y,display_text,color=color,fontsize=size)
         return sum
          
