@@ -158,7 +158,7 @@ class Markimg(ChrisApp):
                             dest         = 'inputJsonName',
                             type         = str,
                             optional     = True,
-                            help         = 'Input file filter',
+                            help         = 'Input JSON file name',
                             default      = 'prediction.json')
                             
         self.add_argument(  '--inputImageName','-i',
