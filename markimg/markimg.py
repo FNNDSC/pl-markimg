@@ -270,10 +270,26 @@ class Markimg(ChrisApp):
                 d_lengths[item] = length
                 
             
+            y,x,z = image.shape
             
-            leftLeg = self.printSum(800,460,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length",options.textSize)
-            rightLeg = self.printSum(800,480,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length",options.textSize)
-            self.printDiff(800,500,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff",options.textSize)
+            x_pos = x * (3/4)
+            y_pos = y - 150
+            
+            x1 = x_pos
+            y1 = y_pos
+                        
+            
+            leftLeg = self.printSum(x1,y1,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length",options.textSize)
+            
+            x2 = x_pos
+            y2 = y_pos + 50
+            
+            rightLeg = self.printSum(x2,y2,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length",options.textSize)
+            
+            x3 = x_pos
+            y3 = y_pos + 100            
+            
+            self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(image)      
