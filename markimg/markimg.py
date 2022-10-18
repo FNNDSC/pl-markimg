@@ -244,7 +244,6 @@ class Markimg(ChrisApp):
             print(f"Reading input image from {file_path}")
             image = cv2.imread(file_path)
             
-            resized_image = cv2.resize(image,(1024,512),interpolation = cv2.INTER_AREA)
             
                
             items = data[row]["landmarks"]
@@ -277,7 +276,7 @@ class Markimg(ChrisApp):
             self.printDiff(800,500,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
-            plt.imshow(resized_image)      
+            plt.imshow(image)      
             plt.savefig(os.path.join(options.outputdir,row+".png"),dpi=250,bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
 
