@@ -338,7 +338,7 @@ class Markimg(ChrisApp):
         return diff
         
     def printSum(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
-        sum = (val1 + val2) * scaleFactor
+        sum = round((val1 + val2),1)
         display_text = title + "=" + str(sum) + unit
         plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return sum
