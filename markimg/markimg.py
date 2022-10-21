@@ -244,6 +244,9 @@ class Markimg(ChrisApp):
             print(f"Reading input image from {file_path}")
             image = cv2.imread(file_path)
             
+            max_y, max_x, max_z = image.shape
+            height = data[row]["origHeight"]
+            ht_scale = height/max_x
             
                
             items = data[row]["landmarks"]
@@ -254,47 +257,50 @@ class Markimg(ChrisApp):
                     # Plot points
                     self.drawPoint(point,options.pointMarker,options.pointColor)   
                      
-            items = data[row]["drawLine"]
+            items = data[row]["drawXLine"]
             for item in items:
                 for i in item:
                     start = d_landmarks[item[i]["start"]]
                     end = d_landmarks[item[i]["end"]]
                     d_lines[i] = [start,end]            
                     # Draw lines
-                    self.drawLine(start,end,options.lineColor) 
+                    self.drawXLine(start,end,options.lineColor, max_y) 
                        
-            items = data[row]["measureLine"]
+            items = data[row]["measureXDist"]
             for item in items:        
                 # Measure distance
-                length = self.measureLine(d_lines[item],options.textColor,options.textSize)
+                length = self.measureXDist(d_lines[item],options.textColor,options.textSize,max_y,ht_scale)
                 d_lengths[item] = length
                 
             
             y,x,z = image.shape
             
-            x_pos = x * (3/4)
-            y_pos = y - 150
+            x_pos = x -150
+            y_pos = y 
             
             x1 = x_pos
             y1 = y_pos
                         
             
-            leftLeg = self.printSum(x1,y1,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"px","Left Leg Length",options.textSize)
+            leftLeg = self.printSum(x1,y1,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"cm","Left Leg Length",options.textSize)
             
-            x2 = x_pos
-            y2 = y_pos + 50
+            x2 = x_pos + 50
+            y2 = y_pos 
             
-            rightLeg = self.printSum(x2,y2,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"px","Right Leg Length",options.textSize)
+            rightLeg = self.printSum(x2,y2,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"cm","Right Leg Length",options.textSize)
             
-            x3 = x_pos
-            y3 = y_pos + 100            
+            x3 = x_pos + 100
+            y3 = y_pos           
             
-            self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"px","Leg Length Diff",options.textSize)
+            self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"cm","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(image)      
-            plt.savefig(os.path.join(options.outputdir,row+".png"),dpi=250,bbox_inches = 'tight',pad_inches=0.0)
+            plt.savefig(os.path.join("/tmp",row+".png"),dpi=250,bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
+            png = cv2.imread(os.path.join("/tmp",row+".png"))
+            inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
+            cv2.imwrite(os.path.join(options.outputdir,row+".png"),inverted_png)
 
     def show_man_page(self):
         """
@@ -326,14 +332,42 @@ class Markimg(ChrisApp):
         return distance
         
     def printDiff(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
-        diff = abs(val1 - val2) * scaleFactor
+        diff = round(abs(val1 - val2),1)
         display_text = title + "=" + str(diff) + unit
-        plt.text(x,y,display_text,color=color,fontsize=size)
+        plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return diff
         
     def printSum(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
         sum = (val1 + val2) * scaleFactor
         display_text = title + "=" + str(sum) + unit
-        plt.text(x,y,display_text,color=color,fontsize=size)
+        plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return sum
+        
+    def measureXDist(self,line,color,size,max_y,scale):
+        P1 = line[0]
+        P2 = line[1]    
+        distance = round((abs(P1[0]-P2[0]) * scale)/10,1)    
+        x = (P1[0]+P2[0])/2    
+        if((max_y - P1[1])<(P2[1]-0)):
+            y = max_y-10
+        else:
+            y = 150    
+        plt.text(x,y,distance , color=color,size=size, rotation=90)
+        return distance
+        
+    def drawXLine(self,start,end,color, max_y):
+        X = []
+        Y = []            
+        X.append(start[0])
+        X.append(end[0])
+        if((max_y - start[1])<(start[1]-0)):
+            Y.append(max_y-10)
+            Y.append(max_y-10)
+        else:
+            Y.append(10)
+            Y.append(10)          
+        # draw connecting lines
+        plt.plot(X,Y, color= color,linewidth=1)
+        # scatter line points
+        plt.scatter(X,Y,marker='|',color=color)
          
