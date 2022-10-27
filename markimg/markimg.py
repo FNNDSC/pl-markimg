@@ -202,6 +202,13 @@ class Markimg(ChrisApp):
                             optional     = True,
                             help         = 'Size of the text displayed on image',
                             default      = 'xx-small')
+                            
+        self.add_argument(  '--linewidth','-w',
+                            dest         = 'linewidth',
+                            type         = float,
+                            optional     = True,
+                            help         = 'Width of lines on image',
+                            default      = 1 )
 
     def run(self, options):
         """
@@ -264,7 +271,7 @@ class Markimg(ChrisApp):
                     end = d_landmarks[item[i]["end"]]
                     d_lines[i] = [start,end]            
                     # Draw lines
-                    self.drawXLine(start,end,options.lineColor, max_y) 
+                    self.drawXLine(start,end,options.lineColor, max_y,options.linewidth) 
                        
             items = data[row]["measureXDist"]
             for item in items:        
@@ -291,7 +298,6 @@ class Markimg(ChrisApp):
             
             x3 = x_pos + 100
             y3 = y_pos           
-            
             self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"cm","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
@@ -311,7 +317,7 @@ class Markimg(ChrisApp):
     def drawPoint(self,point,marker,color):
         plt.scatter(point[0],point[1],marker=marker,color=color,s=100)
         
-    def drawLine(self,start,end,color):
+    def drawLine(self,start,end,color,linewidth):
         X = []
         Y = []    
         X.append(start[0])
@@ -319,7 +325,7 @@ class Markimg(ChrisApp):
         Y.append(start[1])
         Y.append(end[1])    
         # draw connecting lines
-        plt.plot(X,Y, color= color,linewidth=1)
+        plt.plot(X,Y, color= color,linewidth=linewidth)
         
     def measureLine(self,line,color,size,unit='px'):
         P1 = line[0]
@@ -343,19 +349,20 @@ class Markimg(ChrisApp):
         plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return sum
         
-    def measureXDist(self,line,color,size,max_y,scale):
+    def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
         P1 = line[0]
         P2 = line[1]    
-        distance = round((abs(P1[0]-P2[0]) * scale)/10,1)    
+        distance = round((abs(P1[0]-P2[0]) * scale)/10,1)
+        display_text = str(distance) + unit    
         x = (P1[0]+P2[0])/2    
         if((max_y - P1[1])<(P2[1]-0)):
             y = max_y-10
         else:
             y = 150    
-        plt.text(x,y,distance , color=color,size=size, rotation=90)
+        plt.text(x,y,display_text , color=color,size=size, rotation=90)
         return distance
         
-    def drawXLine(self,start,end,color, max_y):
+    def drawXLine(self,start,end,color, max_y,linewidth):
         X = []
         Y = []            
         X.append(start[0])
@@ -367,7 +374,10 @@ class Markimg(ChrisApp):
             Y.append(10)
             Y.append(10)          
         # draw connecting lines
-        plt.plot(X,Y, color= color,linewidth=1)
-        # scatter line points
-        plt.scatter(X,Y,marker='|',color=color)
+        plt.plot(X,Y, color= color,linewidth=linewidth)
+        P1 = start
+        P2 = [start[0],Y[0]]
+        
+        self.drawLine(start,[start[0],Y[0]],color,linewidth)
+        self.drawLine(end,[end[0],Y[1]],color,linewidth)
          
