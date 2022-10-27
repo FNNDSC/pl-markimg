@@ -210,6 +210,13 @@ class Markimg(ChrisApp):
                             help         = 'Width of lines on image',
                             default      = 1 )
 
+        self.add_argument(  '--textPos','-q',
+                            dest         = 'textPos',
+                            type         = str,
+                            optional     = True,
+                            help         = 'Quadrant for displaying text on image',
+                            default      = "bottom-right" )
+                            
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -250,6 +257,7 @@ class Markimg(ChrisApp):
 
             print(f"Reading input image from {file_path}")
             image = cv2.imread(file_path)
+            plt.style.use('dark_background')
             
             max_y, max_x, max_z = image.shape
             height = data[row]["origHeight"]
@@ -280,10 +288,20 @@ class Markimg(ChrisApp):
                 d_lengths[item] = length
                 
             
-            y,x,z = image.shape
+            if (options.textPos == "top-left"):
+                x_pos = 1
+                y_pos = 0
+            elif (options.textPos == "top-right"):
+                x_pos = 1
+                y_pos = 1
+            elif (options.textPos == "bottom-left"):
+                x_pos = 0
+                y_pos = 0
+            elif (options.textPos == "bottom-right"):
+                x_pos = 0
+                y_pos = 1
             
-            x_pos = x -150
-            y_pos = y 
+            x_pos = x_pos -150
             
             x1 = x_pos
             y1 = y_pos
