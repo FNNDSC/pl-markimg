@@ -258,6 +258,7 @@ class Markimg(ChrisApp):
             print(f"Reading input image from {file_path}")
             image = cv2.imread(file_path)
             plt.style.use('dark_background')
+            plt.axis('off')
             
             max_y, max_x, max_z = image.shape
             height = data[row]["origHeight"]
@@ -288,20 +289,20 @@ class Markimg(ChrisApp):
                 d_lengths[item] = length
                 
             
-            if (options.textPos == "top-left"):
-                x_pos = 1
+            if (options.textPos == "bottom-right"):
+                x_pos = max_x
                 y_pos = 0
-            elif (options.textPos == "top-right"):
-                x_pos = 1
-                y_pos = 1
             elif (options.textPos == "bottom-left"):
+                x_pos = max_x
+                y_pos = max_y
+            elif (options.textPos == "top-right"):
                 x_pos = 0
                 y_pos = 0
-            elif (options.textPos == "bottom-right"):
+            elif (options.textPos == "top-left"):
                 x_pos = 0
-                y_pos = 1
+                y_pos = max_y
             
-            x_pos = x_pos -150
+            x_pos = x_pos -210
             
             x1 = x_pos
             y1 = y_pos
@@ -309,12 +310,12 @@ class Markimg(ChrisApp):
             
             leftLeg = self.printSum(x1,y1,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"cm","Left Leg Length",options.textSize)
             
-            x2 = x_pos + 50
+            x2 = x_pos + 70
             y2 = y_pos 
             
             rightLeg = self.printSum(x2,y2,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"cm","Right Leg Length",options.textSize)
             
-            x3 = x_pos + 100
+            x3 = x_pos + 140
             y3 = y_pos           
             self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"cm","Leg Length Diff",options.textSize)
             plt.tick_params(left = False, right = False , labelleft = False ,
@@ -374,9 +375,9 @@ class Markimg(ChrisApp):
         display_text = str(distance) + unit    
         x = (P1[0]+P2[0])/2    
         if((max_y - P1[1])<(P2[1]-0)):
-            y = max_y-10
+            y = max_y-100
         else:
-            y = 150    
+            y = -100   
         plt.text(x,y,display_text , color=color,size=size, rotation=90)
         return distance
         
