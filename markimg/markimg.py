@@ -16,6 +16,7 @@ import math
 import os
 import glob
 import cv2
+import matplotlib.legend as lgnd
 
 
 Gstr_title = r"""
@@ -198,10 +199,10 @@ class Markimg(ChrisApp):
                             
         self.add_argument(  '--textSize','-s',
                             dest         = 'textSize',
-                            type         = str,
+                            type         = float,
                             optional     = True,
                             help         = 'Size of the text displayed on image',
-                            default      = 'xx-small')
+                            default      = 5)
                             
         self.add_argument(  '--linewidth','-w',
                             dest         = 'linewidth',
@@ -215,7 +216,7 @@ class Markimg(ChrisApp):
                             type         = str,
                             optional     = True,
                             help         = 'Quadrant for displaying text on image',
-                            default      = "bottom-right" )
+                            default      = "right" )
                             
     def run(self, options):
         """
@@ -263,6 +264,7 @@ class Markimg(ChrisApp):
             max_y, max_x, max_z = image.shape
             height = data[row]["origHeight"]
             ht_scale = height/max_x
+            info = data[row]['info']
             
                
             items = data[row]["landmarks"]
@@ -289,35 +291,73 @@ class Markimg(ChrisApp):
                 d_lengths[item] = length
                 
             
-            if (options.textPos == "bottom-right"):
-                x_pos = max_x
-                y_pos = 0
-            elif (options.textPos == "bottom-left"):
-                x_pos = max_x
-                y_pos = max_y
-            elif (options.textPos == "top-right"):
-                x_pos = 0
-                y_pos = 0
-            elif (options.textPos == "top-left"):
+            if (options.textPos == "left"):
                 x_pos = 0
                 y_pos = max_y
+            elif (options.textPos == "right"):
+                x_pos = 0
+                y_pos = 0
             
-            x_pos = x_pos -210
+            y_pos = y_pos - 70
             
-            x1 = x_pos
-            y1 = y_pos
+            # Print image info
+            for field in info.keys():
+                x_pos = x_pos + 70
+                display_text = field + ": " + str(info[field])
+                plt.text(x_pos,y_pos,display_text,color='white',fontsize=options.textSize,rotation=90)
+                
+            # Print some blank lines
+            for i in range(0,3):
+                x_pos = x_pos + 70
+                plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+                
+            # Print specific details about the image    
+            rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,rightFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,leftFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            femurDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
+            self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,femurDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            # blank line
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+            
+            rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,rightTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,leftTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            tibiaDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
+            self.compareLength(d_lengths['Left tibia'],d_lengths['Right tibia'])
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,tibiaDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+            
+            totalRightInfo = 'Total right: ' + str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,totalRightInfo,color='white',fontsize=options.textSize,rotation=90)
+            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,totalLeftInfo,color='white',fontsize=options.textSize,rotation=90)
+            
+            totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
+            self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
+            totalComp = self.compareLength(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
+            self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
+            totalDiffInfo = 'Total difference: ' + str(totalDiff) + ' cm, '+ totalComp
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,totalDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            x_pos = x_pos + 70
+            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+                         
                         
-            
-            leftLeg = self.printSum(x1,y1,d_lengths["leftTopLeg"],d_lengths["leftBottomLeg"],options.textColor,"cm","Left Leg Length",options.textSize)
-            
-            x2 = x_pos + 70
-            y2 = y_pos 
-            
-            rightLeg = self.printSum(x2,y2,d_lengths["rightTopLeg"],d_lengths["rightBottomLeg"],options.textColor,"cm","Right Leg Length",options.textSize)
-            
-            x3 = x_pos + 140
-            y3 = y_pos           
-            self.printDiff(x3,y3,leftLeg,rightLeg,options.textColor,"cm","Leg Length Diff",options.textSize)
+            # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(image)      
@@ -356,17 +396,23 @@ class Markimg(ChrisApp):
         plt.text(x,y,display_text, color=color,fontsize=size)
         return distance
         
-    def printDiff(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
+    def getDiff(self,val1,val2):
         diff = round(abs(val1 - val2),1)
-        display_text = title + "=" + str(diff) + unit
-        plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return diff
         
-    def printSum(self,x,y,val1,val2,color,unit,title,size,scaleFactor=1):
+    def getSum(self,val1,val2):
         sum = round((val1 + val2),1)
-        display_text = title + "=" + str(sum) + unit
-        plt.text(x,y,display_text,color=color,fontsize=size,rotation=90)
         return sum
+    
+    def compareLength(self,left,right):
+        compareText = "equal"
+        if left > right:
+            compareText = 'left longer'
+        elif right > left:
+            compareText = 'right longer'
+            
+        return compareText
+        
         
     def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
         P1 = line[0]
@@ -378,7 +424,7 @@ class Markimg(ChrisApp):
             y = max_y-100
         else:
             y = -100   
-        plt.text(x,y,display_text , color=color,size=size, rotation=90)
+        #plt.text(x,y,display_text , color=color,size=size, rotation=90)
         return distance
         
     def drawXLine(self,start,end,color, max_y,linewidth):
