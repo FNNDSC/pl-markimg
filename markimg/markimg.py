@@ -46,6 +46,8 @@ Gstr_synopsis = """
             [-l|--lineColor <lineColor>]                                \\
             [-t|--textColor <textColor>]                                \\
             [-s|--textSize <textSize>]                                  \\
+            [-w|--lineWidth <lineWidth>]                                \\
+            [-q|--textPos <textPosition>]                               \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -94,8 +96,16 @@ Gstr_synopsis = """
         
         [-s|--textSize <textSize>]
         The size of the text on the input image.
-        Default is "xx-small"         
-
+        Default is 5
+        
+        [-w|--lineWidth <lineWidth>]
+        The width of line to be drawn on an input image.
+        Default is 1
+                                       
+        [-q|--textPos <textPosition>]                                     
+        The position of text on an image.
+        Default is right
+        
         [-h] [--help]
         If specified, show help message and exit.
         
@@ -166,7 +176,7 @@ class Markimg(ChrisApp):
                             dest         = 'inputImageName',
                             type         = str,
                             optional     = True,
-                            help         = 'Name of the png file',
+                            help         = 'Name of the input png file',
                             default      = 'leg.png')
                             
         self.add_argument(  '--pointMarker','-p',
@@ -215,7 +225,7 @@ class Markimg(ChrisApp):
                             dest         = 'textPos',
                             type         = str,
                             optional     = True,
-                            help         = 'Quadrant for displaying text on image',
+                            help         = 'Position of text placement on an input image; left or right',
                             default      = "right" )
                             
     def run(self, options):

@@ -40,7 +40,9 @@ Usage
         [-c|--pointColor <pointColor>]                              
         [-l|--lineColor <lineColor>]                                
         [-t|--textColor <textColor>]                                
-        [-s|--textSize <textSize>]                                  
+        [-s|--textSize <textSize>]   
+        [-w|--lineWidth <lineWidth>]                               
+        [-q|--textPos <textPosition>]                                          
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -78,7 +80,15 @@ Arguments
         
     [-s|--textSize <textSize>]
     The size of the text on the input image.
-    Default is "xx-small" 
+    Default is 5 
+    
+    [-w|--lineWidth <lineWidth>]
+    The width of line to be drawn on an input image.
+    Default is 1
+                                       
+    [-q|--textPos <textPosition>]                                     
+    The position of text on an image.
+    Default is 'right'
             
     [-h] [--help]
     If specified, show help message and exit.
