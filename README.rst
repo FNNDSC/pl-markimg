@@ -42,7 +42,8 @@ Usage
         [-t|--textColor <textColor>]                                
         [-s|--textSize <textSize>]   
         [-w|--lineWidth <lineWidth>]                               
-        [-q|--textPos <textPosition>]                                          
+        [-q|--textPos <textPosition>]
+        [-g|--lineGap <lineGap>]                                          
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -89,6 +90,10 @@ Arguments
     [-q|--textPos <textPosition>]                                     
     The position of text on an image.
     Default is 'right'
+    
+    [-g|--lineGap <lineGap>]
+    Space between lines in pixels.
+    Default is 20.
             
     [-h] [--help]
     If specified, show help message and exit.

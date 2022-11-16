@@ -48,6 +48,7 @@ Gstr_synopsis = """
             [-s|--textSize <textSize>]                                  \\
             [-w|--lineWidth <lineWidth>]                                \\
             [-q|--textPos <textPosition>]                               \\
+            [-g|--lineGap <lineGap>]                                    \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -105,6 +106,10 @@ Gstr_synopsis = """
         [-q|--textPos <textPosition>]                                     
         The position of text on an image.
         Default is right
+        
+        [-g|--lineGap <lineGap>]
+        Space between lines in pixels.
+        Default is 20.
         
         [-h] [--help]
         If specified, show help message and exit.
@@ -228,6 +233,13 @@ class Markimg(ChrisApp):
                             help         = 'Position of text placement on an input image; left or right',
                             default      = "right" )
                             
+        self.add_argument(  '--lineGap','-g',
+                            dest         = 'lineGap',
+                            type         = int,
+                            optional     = True,
+                            help         = 'Space between lines in pixels',
+                            default      = 20 )
+                            
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -307,53 +319,55 @@ class Markimg(ChrisApp):
             elif (options.textPos == "right"):
                 x_pos = 0
                 y_pos = 0
+                
+            line_gap = options.lineGap
             
-            y_pos = y_pos - 70
+            y_pos = y_pos - line_gap
             
             # Print image info
             for field in info.keys():
-                x_pos = x_pos + 70
+                x_pos = x_pos + line_gap
                 display_text = field + ": " + str(info[field])
                 plt.text(x_pos,y_pos,display_text,color='white',fontsize=options.textSize,rotation=90)
                 
             # Print some blank lines
             for i in range(0,3):
-                x_pos = x_pos + 70
+                x_pos = x_pos + line_gap
                 plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
                 
             # Print specific details about the image    
             rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightFemurInfo,color='white',fontsize=options.textSize,rotation=90)
             leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftFemurInfo,color='white',fontsize=options.textSize,rotation=90)
             femurDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,femurDiffInfo,color='white',fontsize=options.textSize,rotation=90)
             # blank line
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
             
             rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
             leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
             tibiaDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left tibia'],d_lengths['Right tibia'])
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,tibiaDiffInfo,color='white',fontsize=options.textSize,rotation=90)
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
             
             totalRightInfo = 'Total right: ' + str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalRightInfo,color='white',fontsize=options.textSize,rotation=90)
             totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalLeftInfo,color='white',fontsize=options.textSize,rotation=90)
             
             totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
@@ -361,9 +375,9 @@ class Markimg(ChrisApp):
             totalComp = self.compareLength(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
             self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
             totalDiffInfo = 'Total difference: ' + str(totalDiff) + ' cm, '+ totalComp
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalDiffInfo,color='white',fontsize=options.textSize,rotation=90)
-            x_pos = x_pos + 70
+            x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
                          
                         
@@ -421,7 +435,7 @@ class Markimg(ChrisApp):
         elif right > left:
             compareText = 'right longer'
             
-        return compareText
+        return compareText + '\t'
         
         
     def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
