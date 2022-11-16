@@ -435,7 +435,7 @@ class Markimg(ChrisApp):
         elif right > left:
             compareText = 'right longer'
             
-        return compareText + '\t'
+        return compareText + '    '
         
         
     def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
