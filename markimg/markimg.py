@@ -323,51 +323,72 @@ class Markimg(ChrisApp):
             
             y_pos = y_pos - line_gap
             
+            f = open(options.outputdir+"/logs.txt","w")
+            
             # Print image info
             for field in info.keys():
                 x_pos = x_pos + line_gap
                 display_text = field + ": " + str(info[field])
                 plt.text(x_pos,y_pos,display_text,color='white',fontsize=options.textSize,rotation=90)
+                f.write(display_text)
                 
             # Print some blank lines
             for i in range(0,3):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+                f.write(display_text)
                 
             # Print specific details about the image    
             rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(rightFemurInfo)
+            
             leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(leftFemurInfo)
+            
             femurDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,femurDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(femurDiffInfo)
+            
             # blank line
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+
             
             rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(rightTibiaInfo)
+            
             leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(leftTibiaInfo)
+            
             tibiaDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left tibia'],d_lengths['Right tibia'])
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,tibiaDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(tibiaDiffInfo)
+            
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+
             
             totalRightInfo = 'Total right: ' + str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalRightInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(display_text)
+            
             totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalLeftInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(totalLeftInfo)
             
             totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
             self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
@@ -376,9 +397,11 @@ class Markimg(ChrisApp):
             totalDiffInfo = 'Total difference: ' + str(totalDiff) + ' cm, '+ totalComp
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            f.write(totalDiffInfo)
+            
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
-                         
+          
                         
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left = False, right = False , labelleft = False ,
