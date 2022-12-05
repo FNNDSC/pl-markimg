@@ -269,17 +269,16 @@ class Markimg(ChrisApp):
         d_lines = {}
         d_lengths = {}
         for row in data:
-            # Read image according to "key"
-            image_path = os.path.join(row,options.inputImageName)
             
-            file_path = ""
+            file_path = []
             for root, dirs, files in os.walk(options.inputdir):
                 for dir in dirs:
                     if dir == row:
-                        file_path = os.path.join(root,image_path)
+                        dir_path = os.path.join(root,dir)
+                        file_path = glob.glob(dir_path+'/**/'+options.inputImageName,recursive=True)
 
-            print(f"Reading input image from {file_path}")
-            image = cv2.imread(file_path)
+            print(f"Reading input image from {file_path[0]}")
+            image = cv2.imread(file_path[0])
             plt.style.use('dark_background')
             plt.axis('off')
             
