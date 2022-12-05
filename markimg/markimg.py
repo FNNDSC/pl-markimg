@@ -420,7 +420,7 @@ class Markimg(ChrisApp):
         print(Gstr_synopsis)
         
     def drawPoint(self,point,marker,color):
-        plt.scatter(point[0],point[1],marker=marker,color=color,s=100)
+        plt.scatter(point[0],point[1],marker=marker,color=color,s=10)
         
     def drawLine(self,start,end,color,linewidth):
         X = []
