@@ -240,6 +240,13 @@ class Markimg(ChrisApp):
                             help         = 'Space between lines in pixels',
                             default      = 20 )
                             
+        self.add_argument(  '--pointSize','-z',
+                            dest         = 'pointSize',
+                            type         = int,
+                            optional     = True,
+                            help         = 'The size of points marked on the image',
+                            default      = 10 )
+                            
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -294,7 +301,7 @@ class Markimg(ChrisApp):
                     point = [item[i]["x"],item[i]["y"]]
                     d_landmarks[i] = point            
                     # Plot points
-                    self.drawPoint(point,options.pointMarker,options.pointColor)   
+                    self.drawPoint(point,options.pointMarker,options.pointColor,options.pointSize)   
                      
             items = data[row]["drawXLine"]
             for item in items:
@@ -419,8 +426,8 @@ class Markimg(ChrisApp):
         """
         print(Gstr_synopsis)
         
-    def drawPoint(self,point,marker,color):
-        plt.scatter(point[0],point[1],marker=marker,color=color,s=10)
+    def drawPoint(self,point,marker,color,size):
+        plt.scatter(point[0],point[1],marker=marker,color=color,s=size)
         
     def drawLine(self,start,end,color,linewidth):
         X = []
