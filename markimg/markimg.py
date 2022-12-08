@@ -315,11 +315,12 @@ class Markimg(ChrisApp):
                     self.drawXLine(start,end,options.lineColor, max_y,options.linewidth) 
                        
             items = data[row]["measureXDist"]
+            d_pixel = {}
             for item in items:        
                 # Measure distance
-                length = self.measureXDist(d_lines[item],options.textColor,options.textSize,max_y,ht_scale)
+                px_length,length = self.measureXDist(d_lines[item],options.textColor,options.textSize,max_y,ht_scale)
                 d_lengths[item] = length
-                
+                d_pixel[item] = px_length
             
             if (options.textPos == "left"):
                 x_pos = 0
@@ -333,66 +334,75 @@ class Markimg(ChrisApp):
             y_pos = y_pos - line_gap
             
             
-            d_sub = {}
+            d_info = {}
             # Print image info
             for field in info.keys():
                 x_pos = x_pos + line_gap
                 display_text = field + ": " + str(info[field])
-                d_sub[field] = info[field]
+                d_info[field] = info[field]
                 plt.text(x_pos,y_pos,display_text,color='white',fontsize=options.textSize,rotation=90)
                 
             # Print some blank lines
             for i in range(0,3):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
-                
+            
+            
+            d_femur = {}    
             # Print specific details about the image    
             rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
-            d_sub['Right femur'] = str(d_lengths['Right femur']) + ' cm'
+            d_femur['Right femur'] = str(d_lengths['Right femur']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightFemurInfo,color='white',fontsize=options.textSize,rotation=90)
             
             leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
-            d_sub['Left femur'] = str(d_lengths['Left femur']) + ' cm'
+            d_femur['Left femur'] = str(d_lengths['Left femur']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftFemurInfo,color='white',fontsize=options.textSize,rotation=90)
             
-            femurDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
+            femurDiffInfo = str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
+            
+            femurDiffText ='Difference: ' + femurDiffInfo
+            d_femur['Differece'] = femurDiffInfo 
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,femurDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos,y_pos,femurDiffText,color='white',fontsize=options.textSize,rotation=90)
             
             # blank line
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
 
-            
+            d_tibia = {}
             rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
-            d_sub['Right tibia'] = str(d_lengths['Right tibia']) + ' cm'
+            d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,rightTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
             
             leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
-            d_sub['Left tibia'] = str(d_lengths['Left tibia']) + ' cm'
+            d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,leftTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
             
-            tibiaDiffInfo = 'Difference: ' + str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
+            tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
             self.compareLength(d_lengths['Left tibia'],d_lengths['Right tibia'])
+            
+            tibaiDiffText = 'Difference: ' + tibiaDiffInfo
+            d_tibia['Difference'] = tibiaDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,tibiaDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos,y_pos,tibaiDiffText,color='white',fontsize=options.textSize,rotation=90)
             
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
 
             
+            d_total = {}
             totalRightInfo = 'Total right: ' + str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
-            d_sub['Total right'] = str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
+            d_total['Total right'] = str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalRightInfo,color='white',fontsize=options.textSize,rotation=90)
             
             totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
-            d_sub['Total left'] = str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
+            d_total['Total left'] = str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,totalLeftInfo,color='white',fontsize=options.textSize,rotation=90)
             
@@ -400,9 +410,12 @@ class Markimg(ChrisApp):
             self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
             totalComp = self.compareLength(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
             self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
-            totalDiffInfo = 'Total difference: ' + str(totalDiff) + ' cm, '+ totalComp
+            
+            totalDiffInfo = str(totalDiff) + ' cm, '+ totalComp
+            totalDiffText = 'Total difference: ' + totalDiffInfo
+            d_total['Difference'] = totalDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,totalDiffInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos,y_pos,totalDiffText,color='white',fontsize=options.textSize,rotation=90)
             
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
@@ -417,7 +430,7 @@ class Markimg(ChrisApp):
             png = cv2.imread(os.path.join("/tmp",row+".png"))
             inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
             cv2.imwrite(os.path.join(options.outputdir,row+".png"),inverted_png)
-            d_json[row] = d_sub
+            d_json[row] = {'info':d_info,'femur':d_femur,'tibia':d_tibia,'total':d_total,'pixel_distance':d_pixel}
             
         # Open a json writer, and use the json.dumps()
         # function to dump data
@@ -473,16 +486,10 @@ class Markimg(ChrisApp):
         
     def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
         P1 = line[0]
-        P2 = line[1]    
-        distance = round((abs(P1[0]-P2[0]) * scale)/10,1)
-        display_text = str(distance) + unit    
-        x = (P1[0]+P2[0])/2    
-        if((max_y - P1[1])<(P2[1]-0)):
-            y = max_y-100
-        else:
-            y = -100   
-        #plt.text(x,y,display_text , color=color,size=size, rotation=90)
-        return distance
+        P2 = line[1]
+        pixel_distance = round(abs(P1[0]-P2[0]))
+        actual_distance = round((pixel_distance * scale)/10,1)
+        return pixel_distance, actual_distance
         
     def drawXLine(self,start,end,color, max_y,linewidth):
         X = []
