@@ -43,7 +43,8 @@ Usage
         [-s|--textSize <textSize>]   
         [-w|--lineWidth <lineWidth>]                               
         [-q|--textPos <textPosition>]
-        [-g|--lineGap <lineGap>]                                          
+        [-g|--lineGap <lineGap>]
+        [-z|--pointSize <sizeInPixels>]                                          
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -94,6 +95,10 @@ Arguments
     [-g|--lineGap <lineGap>]
     Space between lines in pixels.
     Default is 20.
+    
+    [-z|--pointSize <sizeInPixels>]
+    The size of points to be plotted on the image.
+    Default is 10.
             
     [-h] [--help]
     If specified, show help message and exit.

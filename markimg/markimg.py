@@ -49,6 +49,7 @@ Gstr_synopsis = """
             [-w|--lineWidth <lineWidth>]                                \\
             [-q|--textPos <textPosition>]                               \\
             [-g|--lineGap <lineGap>]                                    \\
+            [-z|--pointSize <sizeInPixels>]                             \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -110,6 +111,10 @@ Gstr_synopsis = """
         [-g|--lineGap <lineGap>]
         Space between lines in pixels.
         Default is 20.
+        
+        [-z|--pointSize <sizeInPixels>]
+        The size of points to be plotted on the image.
+        Default is 10.
         
         [-h] [--help]
         If specified, show help message and exit.
@@ -244,7 +249,7 @@ class Markimg(ChrisApp):
                             dest         = 'pointSize',
                             type         = int,
                             optional     = True,
-                            help         = 'The size of points marked on the image',
+                            help         = 'The size of points to be plotted on the image',
                             default      = 10 )
                             
     def run(self, options):
