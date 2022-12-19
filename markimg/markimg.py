@@ -369,7 +369,7 @@ class Markimg(ChrisApp):
             self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
             
             femurDiffText ='Difference: ' + femurDiffInfo
-            d_femur['Differece'] = femurDiffInfo 
+            d_femur['Difference'] = femurDiffInfo 
             x_pos = x_pos + line_gap
             plt.text(x_pos,y_pos,femurDiffText,color='white',fontsize=options.textSize,rotation=90)
             
