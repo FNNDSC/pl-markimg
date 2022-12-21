@@ -430,7 +430,7 @@ class Markimg(ChrisApp):
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(image)      
-            plt.savefig(os.path.join("/tmp",row+".png"),dpi=250,bbox_inches = 'tight',pad_inches=0.0)
+            plt.savefig(os.path.join("/tmp",row+".png"),bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
             png = cv2.imread(os.path.join("/tmp",row+".png"))
             inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
