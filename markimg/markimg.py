@@ -252,6 +252,13 @@ class Markimg(ChrisApp):
                             help         = 'The size of points to be plotted on the image',
                             default      = 10 )
                             
+        self.add_argument(  '--dpi','-d',
+                            dest         = 'dpi',
+                            type         = int,
+                            optional     = True,
+                            help         = 'Dots per Inch',
+                            default      = 100 )
+                            
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -430,7 +437,7 @@ class Markimg(ChrisApp):
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
             plt.imshow(image)      
-            plt.savefig(os.path.join("/tmp",row+".png"),bbox_inches = 'tight',pad_inches=0.0)
+            plt.savefig(os.path.join("/tmp",row+".png"),dpi=options.dpi,bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
             png = cv2.imread(os.path.join("/tmp",row+".png"))
             inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
