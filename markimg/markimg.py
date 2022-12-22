@@ -252,12 +252,6 @@ class Markimg(ChrisApp):
                             help         = 'The size of points to be plotted on the image',
                             default      = 10 )
                             
-        self.add_argument(  '--dpi','-d',
-                            dest         = 'dpi',
-                            type         = int,
-                            optional     = True,
-                            help         = 'Dots per Inch',
-                            default      = 100 )
                             
     def run(self, options):
         """
@@ -306,6 +300,7 @@ class Markimg(ChrisApp):
             max_y, max_x, max_z = image.shape
             height = data[row]["origHeight"]
             ht_scale = height/max_x
+            
             info = data[row]['info']
             
                
@@ -436,11 +431,22 @@ class Markimg(ChrisApp):
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
-            plt.imshow(image)      
-            plt.savefig(os.path.join("/tmp",row+".png"),dpi=options.dpi,bbox_inches = 'tight',pad_inches=0.0)
+                
+            plt.imshow(image)  
+            plt.savefig(os.path.join("/tmp",row+"img.png"),bbox_inches = 'tight',pad_inches=0.0)    
+            tmppng = cv2.imread(os.path.join("/tmp",row+"img.png"))
+            y,x,z = tmppng.shape
+            dpi = (max_x/x) * 100
+            print("\nInput image dimensions",image.shape)
+            print(f'\nApplying DPI {dpi} to the output image')
+            
+            plt.savefig(os.path.join("/tmp",row+".png"),dpi = dpi,bbox_inches = 'tight',pad_inches=0.0)
             plt.clf()
-            png = cv2.imread(os.path.join("/tmp",row+".png"))
+            png = cv2.imread(os.path.join("/tmp",row+".png"))            
             inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
+            
+
+            print("\nOutput image dimensions",png.shape)
             cv2.imwrite(os.path.join(options.outputdir,row+".png"),inverted_png)
             d_json[row] = {'info':d_info,'femur':d_femur,'tibia':d_tibia,'total':d_total,'pixel_distance':d_pixel}
             
