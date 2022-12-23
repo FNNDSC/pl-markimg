@@ -62,7 +62,7 @@ Arguments
     The name of the input JSON file. Default is 'prection.json'
         
     [-i|--inputImageName <pngFileName>] 
-    The name of the input png file. Default is 'leg.png' 
+    The name of the input image file. Default is 'leg.png' 
         
     [-p|--pointMarker <pointMarker>]
     A character that represents a point on the image. Default
