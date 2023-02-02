@@ -24,8 +24,7 @@ Description
 -----------
 
 
-``markimg`` is a *ChRIS ds-type* application that takes in ... as ... files
-and produces ...
+``markimg`` is a *ChRIS ds-type* application that consumes upstream information about landmarks in an image, and generates measurement lines on the actual image itself. Additionally, it also generates a mini-report, embedded within the image itself.
 
 
 Usage
@@ -34,17 +33,17 @@ Usage
 .. code::
 
     docker run --rm fnndsc/pl-markimg markimg
-        [-j|--inputJsonName <jsonFileName>]                         
-        [-i|--inputImageName <pngFileName>]                         
-        [-p|--pointMarker <pointMarker>]                            
-        [-c|--pointColor <pointColor>]                              
-        [-l|--lineColor <lineColor>]                                
-        [-t|--textColor <textColor>]                                
-        [-s|--textSize <textSize>]   
-        [-w|--lineWidth <lineWidth>]                               
+        [-j|--inputJsonName <jsonFileName>]
+        [-i|--inputImageName <pngFileName>]
+        [-p|--pointMarker <pointMarker>]
+        [-c|--pointColor <pointColor>]
+        [-l|--lineColor <lineColor>]
+        [-t|--textColor <textColor>]
+        [-s|--textSize <textSize>]
+        [-w|--lineWidth <lineWidth>]
         [-q|--textPos <textPosition>]
         [-g|--lineGap <lineGap>]
-        [-z|--pointSize <sizeInPixels>]                                          
+        [-z|--pointSize <sizeInPixels>]
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -58,68 +57,68 @@ Arguments
 
 .. code::
 
-    [-j|--inputJsonName <jsonFileName>] 
+    [-j|--inputJsonName <jsonFileName>]
     The name of the input JSON file. Default is 'prection.json'
-        
-    [-i|--inputImageName <pngFileName>] 
-    The name of the input image file. Default is 'leg.png' 
-        
+
+    [-i|--inputImageName <pngFileName>]
+    The name of the input image file. Default is 'leg.png'
+
     [-p|--pointMarker <pointMarker>]
     A character that represents a point on the image. Default
     is 'x'
-         
-    [-c|--pointColor <pointColor>] 
+
+    [-c|--pointColor <pointColor>]
     The color of the character representing points on the image.
     Default is red
-        
+
     [-l|--lineColor <lineColor>]
     The color of the line drawn on the input image.
-    Default is red 
-        
+    Default is red
+
     [-t|--textColor <textColor>]
     The color of the text placed on the input image.
     Default is white
-        
+
     [-s|--textSize <textSize>]
     The size of the text on the input image.
-    Default is 5 
-    
+    Default is 5
+
     [-w|--lineWidth <lineWidth>]
     The width of line to be drawn on an input image.
     Default is 1
-                                       
-    [-q|--textPos <textPosition>]                                     
+
+    [-q|--textPos <textPosition>]
     The position of text on an image.
     Default is 'right'
-    
+
     [-g|--lineGap <lineGap>]
     Space between lines in pixels.
     Default is 20.
-    
+
     [-z|--pointSize <sizeInPixels>]
     The size of points to be plotted on the image.
     Default is 10.
-            
+
     [-h] [--help]
     If specified, show help message and exit.
-    
+
     [--json]
     If specified, show json representation of app and exit.
-    
+
     [--man]
     If specified, print (this) man page and exit.
 
     [--meta]
     If specified, print plugin meta data and exit.
-    
-    [--savejson <DIR>] 
-    If specified, save json representation file to DIR and exit. 
-    
+
+    [--savejson <DIR>]
+    If specified, save json representation file to DIR and exit.
+
     [-v <level>] [--verbosity <level>]
     Verbosity level for app. Not used currently.
-    
+
     [--version]
-    If specified, print version number and exit. 
+    If specified, print version number and exit.
 
 
 Getting inline help is:
