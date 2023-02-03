@@ -34,4 +34,4 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 COPY . .
 RUN pip install .
 
-CMD ["markimg", "--help"]
+CMD ["markimg", "--man"]

@@ -86,52 +86,55 @@ Gstr_synopsis = """
 
     DESCRIPTION
 
-        `markimg` is a ChRIS DS plugin that is responsible for adding measurement
-        markers and a mini-report to a image file.
+        `markimg` is a ChRIS DS plugin that is responsible for adding
+        measurement markers to an image file and generating a mini
+        text (JSON) report.
 
     ARGS
 
         [-j|--inputJsonName <jsonFileName>]
-        The name of the input JSON file. Default is 'prection.json'
+        The name of the input JSON file.
+        Default is 'prediction.json'.
 
         [-i|--inputImageName <pngFileName>]
-        The name of the input image file. Default is 'leg.png'
+        The name of the input image file.
+        Default is 'leg.png'.
 
         [-p|--pointMarker <pointMarker>]
-        A character that represents a point on the image. Default
-        is 'x'
+        A character that represents a point on the image.
+        Default is 'x'.
 
         [-c|--pointColor <pointColor>]
         The color of the character representing points on the image.
-        Default is red
+        Default is 'red'.
 
         [-l|--lineColor <lineColor>]
         The color of the line drawn on the input image.
-        Default is red
+        Default is 'red'.
 
         [-t|--textColor <textColor>]
         The color of the text placed on the input image.
-        Default is white
+        Default is 'white'.
 
         [-s|--textSize <textSize>]
         The size of the text on the input image.
-        Default is 5
+        Default is '5'.
 
         [-w|--lineWidth <lineWidth>]
         The width of line to be drawn on an input image.
-        Default is 1
+        Default is '1'.
 
         [-q|--textPos <textPosition>]
         The position of text on an image.
-        Default is right
+        Default is 'right'.
 
         [-g|--lineGap <lineGap>]
         Space between lines in pixels.
-        Default is 20.
+        Default is '20'.
 
         [-z|--pointSize <sizeInPixels>]
         The size of points to be plotted on the image.
-        Default is 10.
+        Default is '10'.
 
         [-h] [--help]
         If specified, show help message and exit.
