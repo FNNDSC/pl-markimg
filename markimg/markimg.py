@@ -468,7 +468,7 @@ class Markimg(ChrisApp):
             tmppng = cv2.imread(os.path.join("/tmp",row+"img.png"))
             y,x,z = tmppng.shape
             dpi = (max_x/x) * 100
-            LOG("Input image dimensions %s" %image.shape)
+            LOG("Input image dimensions %s" % image.shape)
             LOG(f'Applying DPI % to the output image' % dpi)
 
             plt.savefig(os.path.join("/tmp",row+".png"),dpi = dpi,bbox_inches = 'tight',pad_inches=0.0)
