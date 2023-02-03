@@ -477,7 +477,7 @@ class Markimg(ChrisApp):
             inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
 
 
-            LOG("Output image dimensions %s" % png.shape)
+            LOG(f"Output image dimensions {png.shape}")
             cv2.imwrite(os.path.join(options.outputdir,row+".png"),inverted_png)
             d_json[row] = {'info':d_info,'femur':d_femur,'tibia':d_tibia,'total':d_total,'pixel_distance':d_pixel}
 
