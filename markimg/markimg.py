@@ -326,8 +326,8 @@ class Markimg(ChrisApp):
         LOG("")
 
     @pflog.tel_logTime(
-            event       = 'dcm2mha_cnvtr',
-            log         = 'Convert DICOM to sitk mha format'
+            event       = 'markimg',
+            log         = 'Draw line segments between landmark points on an input image'
     )
     def run(self, options):
         """
