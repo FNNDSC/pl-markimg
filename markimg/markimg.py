@@ -539,18 +539,18 @@ class Markimg(ChrisApp):
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
             x_pos = x_pos + line_gap
-            if options.addLinePos == "top":
+            if options.addTextPos == "top":
                 x_pos = 0
                 y_pos = max_y
                 rotation = 90
-            elif options.addLinePos == "bottom":
+            elif options.addTextPos == "bottom":
                 x_pos = max_x
                 y_pos = max_y
                 rotation = 90
-            elif options.addLinePos == "right":
+            elif options.addTextPos == "right":
                 x_pos = x_pos
                 y_pos = 0
-            elif options.addLinePos == "left":
+            elif options.addTextPos == "left":
                 x_pos = x_pos
                 y_pos = max_y
             else:
