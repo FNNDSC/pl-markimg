@@ -13,21 +13,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import math
-import os,sys
+import os, sys
 import glob
 import cv2
 import matplotlib.legend as lgnd
-import  time
-from    loguru                  import logger
+import time
+from loguru import logger
 
-from    pftag               import pftag
-from    pflog               import pflog
+from pftag import pftag
+from pflog import pflog
 
-from    argparse            import Namespace
-from    datetime            import datetime
+from argparse import Namespace
+from datetime import datetime
 
-
-LOG             = logger.debug
+LOG = logger.debug
 
 logger_format = (
     "<green>{time:YYYY-MM-DD HH:mm:ss}</green> │ "
@@ -38,9 +37,8 @@ logger_format = (
     "<level>{message}</level>"
 )
 logger.remove()
-logger.opt(colors = True)
+logger.opt(colors=True)
 logger.add(sys.stderr, format=logger_format)
-
 
 Gstr_title = r"""
                       _    _
@@ -74,6 +72,10 @@ Gstr_synopsis = """
             [-g|--lineGap <lineGap>]                                    \\
             [-z|--pointSize <sizeInPixels>]                             \\
             [--pftelDB <DBURLpath>]                                     \\
+            [--addText <additionalText>]                                \\
+            [--addTextSize <additionalTextSize>]                        \\
+            [--addTextPos <additionalTextPosition>]                     \\
+            [--addTextColor <additionalTextColor>]                      \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -163,7 +165,22 @@ Gstr_synopsis = """
         would be parsed to, for example:
 
             http://localhost:22223/api/vi/Linux/2023-03-11/posix
-
+            
+        [--addText <additionalText>]  
+        If specified, burn this additional text on the final image.   
+                                   
+        [--addTextSize <additionalTextSize>]   
+        The size of the additional text to be shown on the image.
+        Default is 5.  
+                           
+        [--addTextPos <additionalTextPosition>]   
+        The position of the additional text to be shown on the image.  
+        Default is right. 
+                       
+        [--addTextColor <additionalTextColor>] 
+        The color of the additional text to be shown on the image. 
+        Default is white.
+                       
         [-h] [--help]
         If specified, show help message and exit.
 
@@ -191,17 +208,17 @@ class Markimg(ChrisApp):
     """
     An app to mark landmark points and lines on an input image
     """
-    PACKAGE                 = __package__
-    TITLE                   = 'An app to mark landmark points and lines on an input image'
-    CATEGORY                = ''
-    TYPE                    = 'ds'
-    ICON                    = ''   # url of an icon image
-    MIN_NUMBER_OF_WORKERS   = 1    # Override with the minimum number of workers as int
-    MAX_NUMBER_OF_WORKERS   = 1    # Override with the maximum number of workers as int
-    MIN_CPU_LIMIT           = 2000 # Override with millicore value as int (1000 millicores == 1 CPU core)
-    MIN_MEMORY_LIMIT        = 8000  # Override with memory MegaByte (MB) limit as int
-    MIN_GPU_LIMIT           = 0    # Override with the minimum number of GPUs as int
-    MAX_GPU_LIMIT           = 0    # Override with the maximum number of GPUs as int
+    PACKAGE = __package__
+    TITLE = 'An app to mark landmark points and lines on an input image'
+    CATEGORY = ''
+    TYPE = 'ds'
+    ICON = ''  # url of an icon image
+    MIN_NUMBER_OF_WORKERS = 1  # Override with the minimum number of workers as int
+    MAX_NUMBER_OF_WORKERS = 1  # Override with the maximum number of workers as int
+    MIN_CPU_LIMIT = 2000  # Override with millicore value as int (1000 millicores == 1 CPU core)
+    MIN_MEMORY_LIMIT = 8000  # Override with memory MegaByte (MB) limit as int
+    MIN_GPU_LIMIT = 0  # Override with the minimum number of GPUs as int
+    MAX_GPU_LIMIT = 0  # Override with the maximum number of GPUs as int
 
     # Use this dictionary structure to provide key-value output descriptive information
     # that may be useful for the next downstream plugin. For example:
@@ -222,90 +239,115 @@ class Markimg(ChrisApp):
         Use self.add_argument to specify a new app argument.
         """
 
+        self.add_argument('--inputJsonName', '-j',
+                          dest='inputJsonName',
+                          type=str,
+                          optional=True,
+                          help='Input JSON file name',
+                          default='prediction.json')
 
-        self.add_argument(  '--inputJsonName','-j',
-                            dest         = 'inputJsonName',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Input JSON file name',
-                            default      = 'prediction.json')
+        self.add_argument('--inputImageName', '-i',
+                          dest='inputImageName',
+                          type=str,
+                          optional=True,
+                          help='Name of the input image file',
+                          default='leg.png')
 
-        self.add_argument(  '--inputImageName','-i',
-                            dest         = 'inputImageName',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Name of the input image file',
-                            default      = 'leg.png')
+        self.add_argument('--pointMarker', '-p',
+                          dest='pointMarker',
+                          type=str,
+                          optional=True,
+                          help='Point marker',
+                          default='x')
 
-        self.add_argument(  '--pointMarker','-p',
-                            dest         = 'pointMarker',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Point marker',
-                            default      = 'x')
+        self.add_argument('--pointColor', '-c',
+                          dest='pointColor',
+                          type=str,
+                          optional=True,
+                          help='Color of point marker',
+                          default='red')
 
-        self.add_argument(  '--pointColor','-c',
-                            dest         = 'pointColor',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Color of point marker',
-                            default      = 'red')
+        self.add_argument('--lineColor', '-l',
+                          dest='lineColor',
+                          type=str,
+                          optional=True,
+                          help='Color of the line to be drawn',
+                          default='red')
 
-        self.add_argument(  '--lineColor','-l',
-                            dest         = 'lineColor',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Color of the line to be drawn',
-                            default      = 'red')
+        self.add_argument('--textColor', '-t',
+                          dest='textColor',
+                          type=str,
+                          optional=True,
+                          help='Color of text',
+                          default='white')
 
-        self.add_argument(  '--textColor','-t',
-                            dest         = 'textColor',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Color of text',
-                            default      = 'white')
+        self.add_argument('--textSize', '-s',
+                          dest='textSize',
+                          type=float,
+                          optional=True,
+                          help='Size of the text displayed on image',
+                          default=5)
 
-        self.add_argument(  '--textSize','-s',
-                            dest         = 'textSize',
-                            type         = float,
-                            optional     = True,
-                            help         = 'Size of the text displayed on image',
-                            default      = 5)
+        self.add_argument('--linewidth', '-w',
+                          dest='linewidth',
+                          type=float,
+                          optional=True,
+                          help='Width of lines on image',
+                          default=1)
 
-        self.add_argument(  '--linewidth','-w',
-                            dest         = 'linewidth',
-                            type         = float,
-                            optional     = True,
-                            help         = 'Width of lines on image',
-                            default      = 1 )
+        self.add_argument('--textPos', '-q',
+                          dest='textPos',
+                          type=str,
+                          optional=True,
+                          help='Position of text placement on an input image; left or right',
+                          default="right")
 
-        self.add_argument(  '--textPos','-q',
-                            dest         = 'textPos',
-                            type         = str,
-                            optional     = True,
-                            help         = 'Position of text placement on an input image; left or right',
-                            default      = "right" )
+        self.add_argument('--lineGap', '-g',
+                          dest='lineGap',
+                          type=int,
+                          optional=True,
+                          help='Space between lines in pixels',
+                          default=20)
 
-        self.add_argument(  '--lineGap','-g',
-                            dest         = 'lineGap',
-                            type         = int,
-                            optional     = True,
-                            help         = 'Space between lines in pixels',
-                            default      = 20 )
-
-        self.add_argument(  '--pointSize','-z',
-                            dest         = 'pointSize',
-                            type         = int,
-                            optional     = True,
-                            help         = 'The size of points to be plotted on the image',
-                            default      = 10 )
-        self.add_argument(  '--pftelDB',
-                            dest        = 'pftelDB',
-                            default     = '',
-                            type        = str,
-                            optional    = True,
-                            help        = 'optional pftel server DB path'
-                        )
+        self.add_argument('--pointSize', '-z',
+                          dest='pointSize',
+                          type=int,
+                          optional=True,
+                          help='The size of points to be plotted on the image',
+                          default=10)
+        self.add_argument('--pftelDB',
+                          dest='pftelDB',
+                          default='',
+                          type=str,
+                          optional=True,
+                          help='optional pftel server DB path')
+        self.add_argument('--addText',
+                          dest='addText',
+                          default='',
+                          type=str,
+                          optional=True,
+                          help='optional text to add on the final image')
+        self.add_argument('--addTextPos',
+                          dest='addTextPos',
+                          default='right',
+                          type=str,
+                          optional=True,
+                          help='Position of additional text on the final output,'
+                               'the available choices are top, bottom, left, right')
+        self.add_argument('--addTextSize',
+                          dest='addTextSize',
+                          default=5,
+                          type=float,
+                          optional=True,
+                          help='Size of additional text on the final output,'
+                               'default value is 5')
+        self.add_argument('--addTextColor',
+                          dest='addTextColor',
+                          default='white',
+                          type=str,
+                          optional=True,
+                          help='Color of additional text on the final output,'
+                               'default value is white')
 
     def preamble_show(self, options) -> None:
         """
@@ -316,18 +358,18 @@ class Markimg(ChrisApp):
         LOG('Version: %s' % self.get_version())
 
         LOG("plugin arguments...")
-        for k,v in options.__dict__.items():
-             LOG("%25s:  [%s]" % (k, v))
+        for k, v in options.__dict__.items():
+            LOG("%25s:  [%s]" % (k, v))
         LOG("")
 
         LOG("base environment...")
-        for k,v in os.environ.items():
-             LOG("%25s:  [%s]" % (k, v))
+        for k, v in os.environ.items():
+            LOG("%25s:  [%s]" % (k, v))
         LOG("")
 
     @pflog.tel_logTime(
-            event       = 'markimg',
-            log         = 'Draw line segments between landmark points on an input image'
+        event='markimg',
+        log='Draw line segments between landmark points on an input image'
     )
     def run(self, options):
         """
@@ -336,11 +378,11 @@ class Markimg(ChrisApp):
         self.preamble_show(options)
 
         # Read json file first
-        str_glob = '%s/**/%s' % (options.inputdir,options.inputJsonName)
+        str_glob = '%s/**/%s' % (options.inputdir, options.inputJsonName)
 
         l_datapath = glob.glob(str_glob, recursive=True)
 
-        jsonFilePath =l_datapath[0]
+        jsonFilePath = l_datapath[0]
 
         LOG(f"Reading JSON file from {jsonFilePath}")
 
@@ -351,15 +393,15 @@ class Markimg(ChrisApp):
         d_lines = {}
         d_lengths = {}
         d_json = {}
-        jsonFilePath = os.path.join(options.outputdir,'analysis.json')
+        jsonFilePath = os.path.join(options.outputdir, 'analysis.json')
         for row in data:
 
             file_path = []
             for root, dirs, files in os.walk(options.inputdir):
                 for dir in dirs:
                     if dir == row:
-                        dir_path = os.path.join(root,dir)
-                        file_path = glob.glob(dir_path+'/**/'+options.inputImageName,recursive=True)
+                        dir_path = os.path.join(root, dir)
+                        file_path = glob.glob(dir_path + '/**/' + options.inputImageName, recursive=True)
 
             LOG(f"Reading input image from {file_path[0]}")
             image = cv2.imread(file_path[0])
@@ -368,33 +410,33 @@ class Markimg(ChrisApp):
 
             max_y, max_x, max_z = image.shape
             height = data[row]["origHeight"]
-            ht_scale = height/max_x
+            ht_scale = height / max_x
 
             info = data[row]['info']
-
 
             items = data[row]["landmarks"]
             for item in items:
                 for i in item:
-                    point = [item[i]["x"],item[i]["y"]]
+                    point = [item[i]["x"], item[i]["y"]]
                     d_landmarks[i] = point
                     # Plot points
-                    self.drawPoint(point,options.pointMarker,options.pointColor,options.pointSize)
+                    self.drawPoint(point, options.pointMarker, options.pointColor, options.pointSize)
 
             items = data[row]["drawXLine"]
             for item in items:
                 for i in item:
                     start = d_landmarks[item[i]["start"]]
                     end = d_landmarks[item[i]["end"]]
-                    d_lines[i] = [start,end]
+                    d_lines[i] = [start, end]
                     # Draw lines
-                    self.drawXLine(start,end,options.lineColor, max_y,options.linewidth)
+                    self.drawXLine(start, end, options.lineColor, max_y, options.linewidth)
 
             items = data[row]["measureXDist"]
             d_pixel = {}
             for item in items:
                 # Measure distance
-                px_length,length = self.measureXDist(d_lines[item],options.textColor,options.textSize,max_y,ht_scale)
+                px_length, length = self.measureXDist(d_lines[item], options.textColor, options.textSize, max_y,
+                                                      ht_scale)
                 d_lengths[item] = length
                 d_pixel[item] = px_length
 
@@ -409,115 +451,135 @@ class Markimg(ChrisApp):
 
             y_pos = y_pos - line_gap
 
-
             d_info = {}
             # Print image info
             for field in info.keys():
                 x_pos = x_pos + line_gap
                 display_text = field + ": " + str(info[field])
                 d_info[field] = info[field]
-                plt.text(x_pos,y_pos,display_text,color='white',fontsize=options.textSize,rotation=90)
+                plt.text(x_pos, y_pos, display_text, color='white', fontsize=options.textSize, rotation=90)
 
             # Print some blank lines
-            for i in range(0,3):
+            for i in range(0, 3):
                 x_pos = x_pos + line_gap
-                plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
-
+                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_femur = {}
             # Print specific details about the image
             rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
             d_femur['Right femur'] = str(d_lengths['Right femur']) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,rightFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
             leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
             d_femur['Left femur'] = str(d_lengths['Left femur']) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,leftFemurInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            femurDiffInfo = str(self.getDiff(d_lengths['Right femur'],d_lengths['Left femur'])) + ' cm, ' + \
-            self.compareLength(d_lengths['Left femur'],d_lengths['Right femur'])
+            femurDiffInfo = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])) + ' cm, ' + \
+                            self.compareLength(d_lengths['Left femur'], d_lengths['Right femur'])
 
-            femurDiffText ='Difference: ' + femurDiffInfo
+            femurDiffText = 'Difference: ' + femurDiffInfo
             d_femur['Difference'] = femurDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,femurDiffText,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
 
             # blank line
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_tibia = {}
             rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
             d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,rightTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
             leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
             d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,leftTibiaInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'],d_lengths['Left tibia'])) + ' cm, ' + \
-            self.compareLength(d_lengths['Left tibia'],d_lengths['Right tibia'])
+            tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])) + ' cm, ' + \
+                            self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia'])
 
             tibaiDiffText = 'Difference: ' + tibiaDiffInfo
             d_tibia['Difference'] = tibiaDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,tibaiDiffText,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
 
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
-
+            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_total = {}
-            totalRightInfo = 'Total right: ' + str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
-            d_total['Total right'] = str(self.getSum(d_lengths['Right femur'],d_lengths['Right tibia'])) + ' cm'
+            totalRightInfo = 'Total right: ' + str(
+                self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + ' cm'
+            d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,totalRightInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
-            d_total['Total left'] = str(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia'])) + ' cm'
+            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + ' cm'
+            d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + ' cm'
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,totalLeftInfo,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
-            self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
-            totalComp = self.compareLength(self.getSum(d_lengths['Left femur'],d_lengths['Left tibia']), \
-            self.getSum(d_lengths['Right femur'],d_lengths['Right tibia']))
+            totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']), \
+                                     self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
+            totalComp = self.compareLength(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']), \
+                                           self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
 
-            totalDiffInfo = str(totalDiff) + ' cm, '+ totalComp
+            totalDiffInfo = str(totalDiff) + ' cm, ' + totalComp
             totalDiffText = 'Total difference: ' + totalDiffInfo
             d_total['Difference'] = totalDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,totalDiffText,color='white',fontsize=options.textSize,rotation=90)
+            plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
+            # Print some blank lines
+            for i in range(0, 3):
+                x_pos = x_pos + line_gap
+                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+            rotation = 0
             x_pos = x_pos + line_gap
-            plt.text(x_pos,y_pos,'',color='white',fontsize=options.textSize,rotation=90)
+            if options.addLinePos == "top":
+                x_pos = 0
+                y_pos = max_y
+                rotation = 90
+            elif options.addLinePos == "bottom":
+                x_pos = max_x
+                y_pos = max_y
+                rotation = 90
+            elif options.addLinePos == "right":
+                x_pos = x_pos
+                y_pos = 0
+            elif options.addLinePos == "left":
+                x_pos = x_pos
+                y_pos = max_y
+            else:
+                raise Exception(f"Incorrect line position specified: {options.linePos}")
+            y_pos = y_pos - line_gap
 
+            plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize, rotation=rotation)
 
             # Clean up all matplotlib stuff and save as PNG
-            plt.tick_params(left = False, right = False , labelleft = False ,
-                labelbottom = False, bottom = False)
+            plt.tick_params(left=False, right=False, labelleft=False,
+                            labelbottom=False, bottom=False)
 
             plt.imshow(image)
-            plt.savefig(os.path.join("/tmp",row+"img.png"),bbox_inches = 'tight',pad_inches=0.0)
-            tmppng = cv2.imread(os.path.join("/tmp",row+"img.png"))
-            y,x,z = tmppng.shape
-            dpi = (max_x/x) * 100
+            plt.savefig(os.path.join("/tmp", row + "img.png"), bbox_inches='tight', pad_inches=0.0)
+            tmppng = cv2.imread(os.path.join("/tmp", row + "img.png"))
+            y, x, z = tmppng.shape
+            dpi = (max_x / x) * 100
             LOG(f"Input image dimensions {image.shape}")
             LOG(f'Applying DPI {dpi} to the output image')
 
-            plt.savefig(os.path.join("/tmp",row+".png"),dpi = dpi,bbox_inches = 'tight',pad_inches=0.0)
+            plt.savefig(os.path.join("/tmp", row + ".png"), dpi=dpi, bbox_inches='tight', pad_inches=0.0)
             plt.clf()
-            png = cv2.imread(os.path.join("/tmp",row+".png"))
-            inverted_png = cv2.rotate(png,cv2.ROTATE_90_CLOCKWISE)
-
+            png = cv2.imread(os.path.join("/tmp", row + ".png"))
+            inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
 
             LOG(f"Output image dimensions {png.shape}")
-            cv2.imwrite(os.path.join(options.outputdir,row+".png"),inverted_png)
-            d_json[row] = {'info':d_info,'femur':d_femur,'tibia':d_tibia,'total':d_total,'pixel_distance':d_pixel}
+            cv2.imwrite(os.path.join(options.outputdir, row + ".png"), inverted_png)
+            d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
+                           'pixel_distance': d_pixel}
 
         # Open a json writer, and use the json.dumps()
         # function to dump data
@@ -531,10 +593,10 @@ class Markimg(ChrisApp):
         """
         LOG(Gstr_synopsis)
 
-    def drawPoint(self,point,marker,color,size):
-        plt.scatter(point[0],point[1],marker=marker,color=color,s=size)
+    def drawPoint(self, point, marker, color, size):
+        plt.scatter(point[0], point[1], marker=marker, color=color, s=size)
 
-    def drawLine(self,start,end,color,linewidth):
+    def drawLine(self, start, end, color, linewidth):
         X = []
         Y = []
         X.append(start[0])
@@ -542,27 +604,27 @@ class Markimg(ChrisApp):
         Y.append(start[1])
         Y.append(end[1])
         # draw connecting lines
-        plt.plot(X,Y, color= color,linewidth=linewidth)
+        plt.plot(X, Y, color=color, linewidth=linewidth)
 
-    def measureLine(self,line,color,size,unit='px'):
+    def measureLine(self, line, color, size, unit='px'):
         P1 = line[0]
         P2 = line[1]
-        distance = round(math.dist(P1,P2))
+        distance = round(math.dist(P1, P2))
         display_text = str(distance) + unit
-        x = (P1[0]+P2[0])/2
+        x = (P1[0] + P2[0]) / 2
         y = P1[1] - 10
-        plt.text(x,y,display_text, color=color,fontsize=size)
+        plt.text(x, y, display_text, color=color, fontsize=size)
         return distance
 
-    def getDiff(self,val1,val2):
-        diff = round(abs(val1 - val2),1)
+    def getDiff(self, val1, val2):
+        diff = round(abs(val1 - val2), 1)
         return diff
 
-    def getSum(self,val1,val2):
-        sum = round((val1 + val2),1)
+    def getSum(self, val1, val2):
+        sum = round((val1 + val2), 1)
         return sum
 
-    def compareLength(self,left,right):
+    def compareLength(self, left, right):
         compareText = "equal"
         if left > right:
             compareText = 'left longer'
@@ -571,30 +633,28 @@ class Markimg(ChrisApp):
 
         return compareText + '    '
 
-
-    def measureXDist(self,line,color,size,max_y,scale, unit='cm'):
+    def measureXDist(self, line, color, size, max_y, scale, unit='cm'):
         P1 = line[0]
         P2 = line[1]
-        pixel_distance = round(abs(P1[0]-P2[0]))
-        actual_distance = round((pixel_distance * scale)/10,1)
+        pixel_distance = round(abs(P1[0] - P2[0]))
+        actual_distance = round((pixel_distance * scale) / 10, 1)
         return pixel_distance, actual_distance
 
-    def drawXLine(self,start,end,color, max_y,linewidth):
+    def drawXLine(self, start, end, color, max_y, linewidth):
         X = []
         Y = []
         X.append(start[0])
         X.append(end[0])
-        if((max_y - start[1])<(start[1]-0)):
-            Y.append(max_y-10)
-            Y.append(max_y-10)
+        if (max_y - start[1]) < (start[1] - 0):
+            Y.append(max_y - 10)
+            Y.append(max_y - 10)
         else:
             Y.append(10)
             Y.append(10)
         # draw connecting lines
-        plt.plot(X,Y, color= color,linewidth=linewidth)
+        plt.plot(X, Y, color=color, linewidth=linewidth)
         P1 = start
-        P2 = [start[0],Y[0]]
+        P2 = [start[0], Y[0]]
 
-        self.drawLine(start,[start[0],Y[0]],color,linewidth)
-        self.drawLine(end,[end[0],Y[1]],color,linewidth)
-
+        self.drawLine(start, [start[0], Y[0]], color, linewidth)
+        self.drawLine(end, [end[0], Y[1]], color, linewidth)

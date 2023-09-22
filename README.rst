@@ -43,6 +43,10 @@ Usage
         [-q|--textPos <textPosition>]
         [-g|--lineGap <lineGap>]
         [-z|--pointSize <sizeInPixels>]
+        [--addText <additionalText>]
+        [--addTextSize <additionalTextSize>]
+        [--addTextPos <additionalTextPosition>]
+        [--addTextColor <additionalTextColor>]
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -99,6 +103,21 @@ Arguments
         [-z|--pointSize <sizeInPixels>]
         The size of points to be plotted on the image.
         Default is '10'.
+
+        [--addText <additionalText>]
+        If specified, burn this additional text on the final image.
+
+        [--addTextSize <additionalTextSize>]
+        The size of the additional text to be shown on the image.
+        Default is 5.
+
+        [--addTextPos <additionalTextPosition>]
+        The position of the additional text to be shown on the image.
+        Default is right.
+
+        [--addTextColor <additionalTextColor>]
+        The color of the additional text to be shown on the image.
+        Default is white.
 
         [-h] [--help]
         If specified, show help message and exit.
