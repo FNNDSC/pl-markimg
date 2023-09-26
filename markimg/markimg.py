@@ -333,7 +333,7 @@ class Markimg(ChrisApp):
                           type=str,
                           optional=True,
                           help='Position of additional text on the final output,'
-                               'the available choices are top, bottom, left, right')
+                               'the available choices are top, bottom, left, right and across')
         self.add_argument('--addTextSize',
                           dest='addTextSize',
                           default=5,
@@ -553,6 +553,10 @@ class Markimg(ChrisApp):
             elif options.addTextPos == "left":
                 x_pos = x_pos
                 y_pos = max_y
+            elif options.addTextPos == "across":
+                x_pos = x_pos
+                y_pos = max_y
+                rotation = 90 # 135: diagonal [bottom-left - top-right]
             else:
                 raise Exception(f"Incorrect line position specified: {options.linePos}")
             y_pos = y_pos - line_gap
