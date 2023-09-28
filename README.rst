@@ -47,6 +47,7 @@ Usage
         [--addTextSize <additionalTextSize>]
         [--addTextPos <additionalTextPosition>]
         [--addTextColor <additionalTextColor>]
+        [--addTextOffset <additionalTextOffsetPosition>]
         [-h|--help]
         [--json] [--man] [--meta]
         [--savejson <DIR>]
@@ -118,6 +119,10 @@ Arguments
         [--addTextColor <additionalTextColor>]
         The color of the additional text to be shown on the image.
         Default is white.
+
+        [--addTextOffset <additionalTextOffset>]
+        If specified, move the additional text using the offset
+        coordinates (x,y). Accepts a tuple in the form of "x,y"
 
         [-h] [--help]
         If specified, show help message and exit.

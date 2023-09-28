@@ -8,23 +8,18 @@
 #                        dev@babyMRI.org
 #
 
-from chrisapp.base import ChrisApp
-import matplotlib.pyplot as plt
-import numpy as np
+import glob
 import json
 import math
-import os, sys
-import glob
+import os
+import sys
+
 import cv2
-import matplotlib.legend as lgnd
-import time
+import matplotlib.pyplot as plt
+from chrisapp.base import ChrisApp
 from loguru import logger
-
-from pftag import pftag
 from pflog import pflog
-
-from argparse import Namespace
-from datetime import datetime
+from markimg.imageCanvas import ImageCanvas
 
 LOG = logger.debug
 
@@ -76,6 +71,7 @@ Gstr_synopsis = """
             [--addTextSize <additionalTextSize>]                        \\
             [--addTextPos <additionalTextPosition>]                     \\
             [--addTextColor <additionalTextColor>]                      \\
+            [--addTextOffset <additionalTextOffsetPosition>]            \\
             [-h] [--help]                                               \\
             [--json]                                                    \\
             [--man]                                                     \\
@@ -180,6 +176,11 @@ Gstr_synopsis = """
         [--addTextColor <additionalTextColor>] 
         The color of the additional text to be shown on the image. 
         Default is white.
+        
+        [--addTextOffset <additionalTextOffset>]
+        If specified, move the additional text using the offset 
+        coordinates (x,y). Accepts a tuple in the form of "x,y"
+        
                        
         [-h] [--help]
         If specified, show help message and exit.
@@ -348,6 +349,13 @@ class Markimg(ChrisApp):
                           optional=True,
                           help='Color of additional text on the final output,'
                                'default value is white')
+        self.add_argument('--addTextOffset',
+                          dest='addTextOffset',
+                          default='0,0',
+                          type=str,
+                          optional=True,
+                          help='Offset of additional text on the final output,'
+                               'default value is 0,0')
 
     def preamble_show(self, options) -> None:
         """
@@ -409,6 +417,7 @@ class Markimg(ChrisApp):
             plt.axis('off')
 
             max_y, max_x, max_z = image.shape
+            img_XY_plane: ImageCanvas = ImageCanvas(max_y, max_x)
             height = data[row]["origHeight"]
             ht_scale = height / max_x
 
@@ -538,30 +547,37 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
-            x_pos = x_pos + line_gap
-            if options.addTextPos == "top":
-                x_pos = 0
-                y_pos = max_y
-                rotation = 90
-            elif options.addTextPos == "bottom":
-                x_pos = max_x
-                y_pos = max_y
-                rotation = 90
+
+            #x_pos = x_pos + line_gap
+            """
+            Need to rewrite login for directions.
+            """
+            if options.addTextPos == "left":
+                x_pos, y_pos = img_XY_plane.go_top()
             elif options.addTextPos == "right":
-                x_pos = x_pos
-                y_pos = 0
-            elif options.addTextPos == "left":
-                x_pos = x_pos
-                y_pos = max_y
+                x_pos, y_pos = img_XY_plane.go_bottom()
+            elif options.addTextPos == "bottom":
+                x_pos, y_pos = img_XY_plane.go_right()
+                rotation = 90
+            elif options.addTextPos == "top":
+                x_pos, y_pos = img_XY_plane.go_left()
+                rotation = 90
             elif options.addTextPos == "across":
-                x_pos = x_pos
-                y_pos = max_y
-                rotation = 90 # 135: diagonal [bottom-left - top-right]
+                x_pos, y_pos = img_XY_plane.go_center()
+                rotation = 90  # 135: diagonal [bottom-left - top-right]
             else:
                 raise Exception(f"Incorrect line position specified: {options.linePos}")
-            y_pos = y_pos - line_gap
 
-            plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize, rotation=rotation)
+            if len(options.addTextOffset):
+                offset = options.addTextOffset.split(',')
+                offset_y = int(offset[0])
+                offset_x = int(offset[1])
+                x_pos, y_pos = img_XY_plane.add_offset(-offset_x, -offset_y)
+
+            # y_pos = y_pos - line_gap
+
+            plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
+                     rotation=rotation)
 
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left=False, right=False, labelleft=False,
