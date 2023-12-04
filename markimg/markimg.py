@@ -449,6 +449,13 @@ class Markimg(ChrisApp):
                 d_lengths[item] = length
                 d_pixel[item] = px_length
 
+            unit = 'cm'
+            msg = ''
+            if ht_scale == 0:
+                unit = 'px'
+                msg = '(FOVDimension tag missing for this dicom)'
+
+
             if (options.textPos == "left"):
                 x_pos = 0
                 y_pos = max_y
@@ -475,17 +482,17 @@ class Markimg(ChrisApp):
 
             d_femur = {}
             # Print specific details about the image
-            rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + ' cm'
+            rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + f' {unit}'
             d_femur['Right femur'] = str(d_lengths['Right femur']) + ' cm'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + ' cm'
-            d_femur['Left femur'] = str(d_lengths['Left femur']) + ' cm'
+            leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + f' {unit}'
+            d_femur['Left femur'] = str(d_lengths['Left femur']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            femurDiffInfo = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])) + ' cm, ' + \
+            femurDiffInfo = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])) + f' {unit}, ' + \
                             self.compareLength(d_lengths['Left femur'], d_lengths['Right femur'])
 
             femurDiffText = 'Difference: ' + femurDiffInfo
@@ -498,17 +505,17 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_tibia = {}
-            rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + ' cm'
-            d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + ' cm'
+            rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + f' {unit}'
+            d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + ' cm'
-            d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + ' cm'
+            leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + f' {unit}'
+            d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])) + ' cm, ' + \
+            tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])) + f' {unit}, ' + \
                             self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia'])
 
             tibaiDiffText = 'Difference: ' + tibiaDiffInfo
@@ -521,13 +528,13 @@ class Markimg(ChrisApp):
 
             d_total = {}
             totalRightInfo = 'Total right: ' + str(
-                self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + ' cm'
-            d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + ' cm'
+                self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
+            d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + ' cm'
-            d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + ' cm'
+            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
+            d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
 
@@ -536,7 +543,7 @@ class Markimg(ChrisApp):
             totalComp = self.compareLength(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']), \
                                            self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
 
-            totalDiffInfo = str(totalDiff) + ' cm, ' + totalComp
+            totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp
             totalDiffText = 'Total difference: ' + totalDiffInfo
             d_total['Difference'] = totalDiffInfo
             x_pos = x_pos + line_gap
@@ -547,10 +554,10 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
+            plt.text(x_pos, y_pos, msg, color='white', fontsize=options.textSize, rotation=90)
 
-            #x_pos = x_pos + line_gap
             """
-            Need to rewrite login for directions.
+            Need to rewrite logic for directions.
             """
             if options.addTextPos == "left":
                 x_pos, y_pos = img_XY_plane.go_top()
@@ -658,6 +665,8 @@ class Markimg(ChrisApp):
         P2 = line[1]
         pixel_distance = round(abs(P1[0] - P2[0]))
         actual_distance = round((pixel_distance * scale) / 10, 1)
+        if scale==0:
+            return pixel_distance, pixel_distance
         return pixel_distance, actual_distance
 
     def drawXLine(self, start, end, color, max_y, linewidth):

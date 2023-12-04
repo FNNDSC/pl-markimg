@@ -15,8 +15,8 @@ class ImageCanvas:
 
     def __get_left(self) -> (int, int):
         """
-        A method to return the mid-point on the left border of
-        the canvas
+        A method to return the mid-point on the left
+        border of the canvas
         :return: x-y coordinates
         """
         return 0, self.height / 2
