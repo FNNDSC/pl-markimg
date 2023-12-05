@@ -453,7 +453,7 @@ class Markimg(ChrisApp):
             msg = ''
             if ht_scale == 0:
                 unit = 'px'
-                msg = '(FOVDimension tag missing for this dicom)'
+                msg = '(dicom missing FOVDimension tag)'
 
 
             if (options.textPos == "left"):
