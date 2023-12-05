@@ -483,7 +483,7 @@ class Markimg(ChrisApp):
             d_femur = {}
             # Print specific details about the image
             rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + f' {unit}'
-            d_femur['Right femur'] = str(d_lengths['Right femur']) + ' cm'
+            d_femur['Right femur'] = str(d_lengths['Right femur']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
