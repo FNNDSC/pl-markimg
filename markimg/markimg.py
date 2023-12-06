@@ -453,13 +453,12 @@ class Markimg(ChrisApp):
             msg = ''
             if ht_scale == 0:
                 unit = 'px'
-                msg = '(dicom missing FOVDimension tag)'
+                msg = 'WARNING: DICOM missing FOVDimension tag'
 
-
-            if (options.textPos == "left"):
+            if options.textPos == "left":
                 x_pos = 0
                 y_pos = max_y
-            elif (options.textPos == "right"):
+            elif options.textPos == "right":
                 x_pos = 0
                 y_pos = 0
 
@@ -554,7 +553,7 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
-            plt.text(x_pos, y_pos, msg, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, msg, color='yellow', fontsize=options.textSize, rotation=90)
 
             """
             Need to rewrite logic for directions.
@@ -654,9 +653,9 @@ class Markimg(ChrisApp):
     def compareLength(self, left, right):
         compareText = "equal"
         if left > right:
-            compareText = 'left longer'
+            compareText = f'left longer({round(((left-right)/left)*100)}%)'
         elif right > left:
-            compareText = 'right longer'
+            compareText = f'right longer({round(((right-left)/right)*100)}%)'
 
         return compareText + '    '
 
