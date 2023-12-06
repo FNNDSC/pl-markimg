@@ -653,9 +653,9 @@ class Markimg(ChrisApp):
     def compareLength(self, left, right):
         compareText = "equal"
         if left > right:
-            compareText = f'left longer({round(((left-right)/left)*100)}%)'
+            compareText = f'left longer({round(((left-right)/right)*100)}%)'
         elif right > left:
-            compareText = f'right longer({round(((right-left)/right)*100)}%)'
+            compareText = f'right longer({round(((right-left)/left)*100)}%)'
 
         return compareText + '    '
 
