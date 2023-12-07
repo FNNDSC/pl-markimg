@@ -438,7 +438,7 @@ class Markimg(ChrisApp):
                     end = d_landmarks[item[i]["end"]]
                     d_lines[i] = [start, end]
                     # Draw lines
-                    self.drawXLine(start, end, options.lineColor, max_y, options.linewidth)
+                    self.drawXLine(start, end, options.lineColor, max_y, options.linewidth, i)
 
             items = data[row]["measureXDist"]
             d_pixel = {}
@@ -453,7 +453,9 @@ class Markimg(ChrisApp):
             msg = ''
             if ht_scale == 0:
                 unit = 'px'
-                msg = 'WARNING: DICOM missing FOVDimension tag'
+                msg = ('WARNING: \n'
+                       'DICOM is missing FOVDimension tag.\n'
+                       'Calculations in cm is not possible.')
 
             if options.textPos == "left":
                 x_pos = 0
@@ -553,7 +555,7 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
-            plt.text(x_pos, y_pos, msg, color='yellow', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, msg, color='cyan', fontsize=options.textSize, rotation=90)
 
             """
             Need to rewrite logic for directions.
@@ -668,12 +670,12 @@ class Markimg(ChrisApp):
             return pixel_distance, pixel_distance
         return pixel_distance, actual_distance
 
-    def drawXLine(self, start, end, color, max_y, linewidth):
+    def drawXLine(self, start, end, color, max_y, linewidth, bone_name):
         X = []
         Y = []
         X.append(start[0])
         X.append(end[0])
-        if (max_y - start[1]) < (start[1] - 0):
+        if "Right" in bone_name:
             Y.append(max_y - 10)
             Y.append(max_y - 10)
         else:
