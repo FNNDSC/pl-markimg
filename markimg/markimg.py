@@ -455,7 +455,7 @@ class Markimg(ChrisApp):
                 unit = 'px'
                 msg = ('WARNING: \n'
                        'DICOM is missing FOVDimension tag.\n'
-                       'Calculations in cm is not possible.')
+                       'Calculations in cm are not possible.')
 
             if options.textPos == "left":
                 x_pos = 0
@@ -655,9 +655,9 @@ class Markimg(ChrisApp):
     def compareLength(self, left, right):
         compareText = "equal"
         if left > right:
-            compareText = f'left longer({round(((left-right)/right)*100)}%)'
+            compareText = f'left longer ({round(((left-right)/right)*100)}%)'
         elif right > left:
-            compareText = f'right longer({round(((right-left)/left)*100)}%)'
+            compareText = f'right longer ({round(((right-left)/left)*100)}%)'
 
         return compareText + '    '
 
