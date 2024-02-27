@@ -534,7 +534,8 @@ class Markimg(ChrisApp):
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalLeftInfo = 'Total left: ' + str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
+            totalLeftInfo = 'Total left: ' + str(
+                self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
@@ -551,11 +552,16 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
             # Print some blank lines
-            for i in range(0, 3):
+            for i in range(0, 2):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             rotation = 0
             plt.text(x_pos, y_pos, msg, color='cyan', fontsize=options.textSize, rotation=90)
+            for i in range(0, 2):
+                x_pos = x_pos + line_gap
+                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
+                     rotation=90)
 
             """
             Need to rewrite logic for directions.
@@ -584,8 +590,8 @@ class Markimg(ChrisApp):
 
             # y_pos = y_pos - line_gap
 
-            plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
-                     rotation=rotation)
+            # plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
+            #         rotation=rotation)
 
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left=False, right=False, labelleft=False,
@@ -654,10 +660,13 @@ class Markimg(ChrisApp):
 
     def compareLength(self, left, right):
         compareText = "equal"
-        if left > right:
-            compareText = f'left longer ({round(((left-right)/right)*100, 1)}%)'
-        elif right > left:
-            compareText = f'right longer ({round(((right-left)/left)*100, 1)}%)'
+        try:
+            if left > right:
+                compareText = f'left longer ({round(((left - right) / right) * 100, 1)}%)'
+            elif right > left:
+                compareText = f'right longer ({round(((right - left) / left) * 100, 1)}%)'
+        except ZeroDivisionError:
+            compareText = "Error: ZeroDivisionError"
 
         return compareText + '    '
 
@@ -666,7 +675,7 @@ class Markimg(ChrisApp):
         P2 = line[1]
         pixel_distance = round(abs(P1[0] - P2[0]))
         actual_distance = round((pixel_distance * scale) / 10, 1)
-        if scale==0:
+        if scale == 0:
             return pixel_distance, pixel_distance
         return pixel_distance, actual_distance
 
