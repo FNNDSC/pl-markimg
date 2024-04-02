@@ -450,12 +450,12 @@ class Markimg(ChrisApp):
                 d_pixel[item] = px_length
 
             unit = 'cm'
-            msg = ''
+            warning_msg = ''
             if ht_scale == 0:
                 unit = 'px'
-                msg = ('WARNING: \n'
-                       'DICOM is missing FOVDimension tag.\n'
-                       'Calculations in cm are not possible.')
+                warning_msg = ('WARNING: \n'
+                               'DICOM is missing FOVDimension tag.\n'
+                               'Calculations in cm are not possible.')
 
             if options.textPos == "left":
                 x_pos = 0
@@ -540,9 +540,9 @@ class Markimg(ChrisApp):
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']), \
+            totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']),
                                      self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
-            totalComp = self.compareLength(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']), \
+            totalComp = self.compareLength(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']),
                                            self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
 
             totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp
@@ -551,13 +551,14 @@ class Markimg(ChrisApp):
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
-            # Print some blank lines
-            for i in range(0, 2):
-                x_pos = x_pos + line_gap
-                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
-            rotation = 0
-            plt.text(x_pos, y_pos, msg, color='cyan', fontsize=options.textSize, rotation=90)
-            for i in range(0, 2):
+            if warning_msg:
+                # Print some blank lines
+                for i in range(0, 2):
+                    x_pos = x_pos + line_gap
+                    plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+                rotation = 0
+                plt.text(x_pos, y_pos, warning_msg, color='cyan', fontsize=options.textSize, rotation=90)
+            for i in range(0, 4):
                 x_pos = x_pos + line_gap
                 plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
