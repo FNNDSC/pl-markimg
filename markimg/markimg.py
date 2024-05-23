@@ -422,6 +422,7 @@ class Markimg(ChrisApp):
             ht_scale = height / max_x
 
             info = data[row]['info']
+            details = data[row]['details']
 
             items = data[row]["landmarks"]
             for item in items:
@@ -614,7 +615,7 @@ class Markimg(ChrisApp):
             LOG(f"Output image dimensions {png.shape}")
             cv2.imwrite(os.path.join(options.outputdir, row + ".png"), inverted_png)
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
-                           'pixel_distance': d_pixel}
+                           'pixel_distance': d_pixel, 'details': details}
 
         # Open a json writer, and use the json.dumps()
         # function to dump data
