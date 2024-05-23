@@ -401,7 +401,7 @@ class Markimg(ChrisApp):
         d_lines = {}
         d_lengths = {}
         d_json = {}
-        jsonFilePath = os.path.join(options.outputdir, 'analysis.json')
+        row = ""
         for row in data:
 
             file_path = []
@@ -617,6 +617,7 @@ class Markimg(ChrisApp):
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
                            'pixel_distance': d_pixel, 'details': details}
 
+        jsonFilePath = os.path.join(options.outputdir, f'{row}-analysis.json')
         # Open a json writer, and use the json.dumps()
         # function to dump data
         LOG("Saving %s" % jsonFilePath)
