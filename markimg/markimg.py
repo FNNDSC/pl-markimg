@@ -486,12 +486,12 @@ class Markimg(ChrisApp):
 
             d_femur = {}
             # Print specific details about the image
-            rightFemurInfo = 'Right femur'.rjust(16) + f': {str(d_lengths['Right femur'])} {unit}'
+            rightFemurInfo = 'Right femur'.rjust(16) + f": {str(d_lengths['Right femur'])} {unit}"
             d_femur['Right femur'] = str(d_lengths['Right femur']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            leftFemurInfo = 'Left femur'.rjust(16) + f': {str(d_lengths['Left femur'])} {unit}'
+            leftFemurInfo = 'Left femur'.rjust(16) + f": {str(d_lengths['Left femur'])} {unit}"
             d_femur['Left femur'] = str(d_lengths['Left femur']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
@@ -509,12 +509,12 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_tibia = {}
-            rightTibiaInfo = 'Right tibia'.rjust(16) + f': {str(d_lengths['Right tibia'])} {unit}'
+            rightTibiaInfo = 'Right tibia'.rjust(16) + f": {str(d_lengths['Right tibia'])} {unit}"
             d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            leftTibiaInfo = 'Left tibia'.rjust(16) + f': {str(d_lengths['Left tibia'])} {unit}'
+            leftTibiaInfo = 'Left tibia'.rjust(16) + f": {str(d_lengths['Left tibia'])} {unit}"
             d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
@@ -532,13 +532,13 @@ class Markimg(ChrisApp):
 
             d_total = {}
             totalRightInfo = 'Total right'.rjust(16) + \
-                f': {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}'
+                f": {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}"
             d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
             totalLeftInfo = 'Total left'.rjust(16) + \
-                f': {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}'
+                f": {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}"
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
