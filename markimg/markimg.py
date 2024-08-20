@@ -531,14 +531,14 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
 
             d_total = {}
-            totalRightInfo = 'Total right'.rjust(16) + f': {str(
-                self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}'
+            totalRightInfo = 'Total right'.rjust(16) + \
+                f': {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}'
             d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
-            totalLeftInfo = 'Total left'.rjust(16) + f': {str(
-                self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}'
+            totalLeftInfo = 'Total left'.rjust(16) + \
+                f': {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}'
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
