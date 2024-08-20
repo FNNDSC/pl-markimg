@@ -475,7 +475,7 @@ class Markimg(ChrisApp):
             # Print image info
             for field in info.keys():
                 x_pos = x_pos + line_gap
-                display_text = field + ": " + str(info[field])
+                display_text = field + " : " + str(info[field])
                 d_info[field] = info[field]
                 plt.text(x_pos, y_pos, display_text, color='white', fontsize=options.textSize, rotation=90)
 
@@ -657,7 +657,7 @@ class Markimg(ChrisApp):
 
     def getDiff(self, val1, val2):
         diff = round(abs(val1 - val2), 1)
-        return f'{diff:03}'
+        return f'{diff:04}'
 
     def getSum(self, val1, val2):
         sum = round((val1 + val2), 1)
