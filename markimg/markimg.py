@@ -477,71 +477,71 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 display_text = field + ": " + str(info[field])
                 d_info[field] = info[field]
-                plt.text(x_pos, y_pos, display_text, color='white', fontsize=options.textSize, rotation=90)
+                plt.text(x_pos, y_pos, display_text, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             # Print some blank lines
             for i in range(0, 3):
                 x_pos = x_pos + line_gap
-                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             d_femur = {}
             # Print specific details about the image
-            rightFemurInfo = 'Right femur: ' + str(d_lengths['Right femur']) + f' {unit}'
+            rightFemurInfo = 'Right femur : ' + str(d_lengths['Right femur']) + f' {unit}'
             d_femur['Right femur'] = str(d_lengths['Right femur']) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
-            leftFemurInfo = 'Left femur: ' + str(d_lengths['Left femur']) + f' {unit}'
+            leftFemurInfo = 'Left femur : ' + str(d_lengths['Left femur']) + f' {unit}'
             d_femur['Left femur'] = str(d_lengths['Left femur']) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             femurDiffInfo = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])) + f' {unit}, ' + \
                             self.compareLength(d_lengths['Left femur'], d_lengths['Right femur'])
 
-            femurDiffText = 'Difference: ' + femurDiffInfo
+            femurDiffText = 'Difference : ' + femurDiffInfo
             d_femur['Difference'] = femurDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             # blank line
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             d_tibia = {}
-            rightTibiaInfo = 'Right tibia: ' + str(d_lengths['Right tibia']) + f' {unit}'
+            rightTibiaInfo = 'Right tibia : ' + str(d_lengths['Right tibia']) + f' {unit}'
             d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
-            leftTibiaInfo = 'Left tibia: ' + str(d_lengths['Left tibia']) + f' {unit}'
+            leftTibiaInfo = 'Left tibia : ' + str(d_lengths['Left tibia']) + f' {unit}'
             d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])) + f' {unit}, ' + \
                             self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia'])
 
-            tibaiDiffText = 'Difference: ' + tibiaDiffInfo
+            tibaiDiffText = 'Difference : ' + tibiaDiffInfo
             d_tibia['Difference'] = tibiaDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             d_total = {}
-            totalRightInfo = 'Total right: ' + str(
+            totalRightInfo = 'Total right : ' + str(
                 self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
-            totalLeftInfo = 'Total left: ' + str(
+            totalLeftInfo = 'Total left : ' + str(
                 self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             totalDiff = self.getDiff(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']),
                                      self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
@@ -549,10 +549,10 @@ class Markimg(ChrisApp):
                                            self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
 
             totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp
-            totalDiffText = 'Total difference: ' + totalDiffInfo
+            totalDiffText = 'Total difference : ' + totalDiffInfo
             d_total['Difference'] = totalDiffInfo
             x_pos = x_pos + line_gap
-            plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
+            plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90, wrap=True)
 
             if warning_msg:
                 # Print some blank lines
@@ -657,7 +657,7 @@ class Markimg(ChrisApp):
 
     def getDiff(self, val1, val2):
         diff = round(abs(val1 - val2), 1)
-        return diff
+        return f'{diff:03}'
 
     def getSum(self, val1, val2):
         sum = round((val1 + val2), 1)
