@@ -15,12 +15,14 @@ import os
 import sys
 
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 from chrisapp.base import ChrisApp
 from loguru import logger
 from pflog import pflog
 from markimg.imageCanvas import ImageCanvas
 
+matplotlib.rcParams['font.family'] = 'monospace'
 LOG = logger.debug
 
 logger_format = (
