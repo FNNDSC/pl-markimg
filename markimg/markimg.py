@@ -472,6 +472,10 @@ class Markimg(ChrisApp):
             y_pos = y_pos - line_gap
 
             d_info = {}
+            # Print some blank lines
+            for i in range(0, 10):
+                x_pos = x_pos + line_gap
+                plt.text(x_pos, y_pos, '', color='white', fontsize=options.textSize, rotation=90)
             # Print image info
             for field in info.keys():
                 x_pos = x_pos + line_gap
@@ -665,15 +669,18 @@ class Markimg(ChrisApp):
 
     def compareLength(self, left, right):
         compareText = "equal"
+        diff_perc = ""
         try:
             if left > right:
-                compareText = f'left longer ({round(((left - right) / right) * 100, 1)}%)'
+                compareText = f'left longer '
+                diff_perc = f'({round(((left - right) / right) * 100, 1)}%)'
             elif right > left:
-                compareText = f'right longer ({round(((right - left) / left) * 100, 1)}%)'
+                compareText = f'right longer '
+                diff_perc = f'({round(((right - left) / left) * 100, 1)}%)'
         except ZeroDivisionError:
             compareText = "Error: ZeroDivisionError"
 
-        return compareText + '    '
+        return compareText
 
     def measureXDist(self, line, color, size, max_y, scale, unit='cm'):
         P1 = line[0]
