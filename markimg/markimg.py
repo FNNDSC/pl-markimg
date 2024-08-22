@@ -501,10 +501,10 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
             femurDiffInfo = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])) + f' {unit}, ' + \
-                            self.compareLength(d_lengths['Left femur'], d_lengths['Right femur'])
+                            self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[0]
 
             femurDiffText = 'Difference'.rjust(16) + f': {femurDiffInfo}'
-            d_femur['Difference'] = femurDiffInfo
+            d_femur['Difference'] = femurDiffInfo + self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[1]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -524,10 +524,10 @@ class Markimg(ChrisApp):
             plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
             tibiaDiffInfo = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])) + f' {unit}, ' + \
-                            self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia'])
+                            self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[0]
 
             tibaiDiffText = 'Difference'.rjust(16) + f': {tibiaDiffInfo}'
-            d_tibia['Difference'] = tibiaDiffInfo
+            d_tibia['Difference'] = tibiaDiffInfo + self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[1]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -552,9 +552,9 @@ class Markimg(ChrisApp):
             totalComp = self.compareLength(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']),
                                            self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
 
-            totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp
+            totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp.split(':')[0]
             totalDiffText = 'Total difference'.rjust(16) + f': {totalDiffInfo}'
-            d_total['Difference'] = totalDiffInfo
+            d_total['Difference'] = totalDiffInfo + totalComp.split(':')[1]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -668,15 +668,13 @@ class Markimg(ChrisApp):
         return sum
 
     def compareLength(self, left, right):
-        compareText = "equal"
+        compareText = "equal: 0.0%"
         diff_perc = ""
         try:
             if left > right:
-                compareText = f'left longer '
-                diff_perc = f'({round(((left - right) / right) * 100, 1)}%)'
+                compareText = f'left longer: {round(((left - right) / right) * 100, 1)}%'
             elif right > left:
-                compareText = f'right longer '
-                diff_perc = f'({round(((right - left) / left) * 100, 1)}%)'
+                compareText = f'right longer: {round(((right - left) / left) * 100, 1)}%'
         except ZeroDivisionError:
             compareText = "Error: ZeroDivisionError"
 
