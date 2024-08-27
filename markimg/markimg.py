@@ -13,7 +13,7 @@ import json
 import math
 import os
 import sys
-
+from PIL import Image
 import cv2
 import matplotlib
 import matplotlib.pyplot as plt
@@ -21,6 +21,7 @@ from chrisapp.base import ChrisApp
 from loguru import logger
 from pflog import pflog
 from markimg.imageCanvas import ImageCanvas
+import numpy as np
 
 matplotlib.rcParams['font.family'] = 'monospace'
 LOG = logger.debug
@@ -415,10 +416,14 @@ class Markimg(ChrisApp):
 
             LOG(f"Reading input image from {file_path[0]}")
             image = cv2.imread(file_path[0])
+
             plt.style.use('dark_background')
             plt.axis('off')
 
             max_y, max_x, max_z = image.shape
+            plt.figure(figsize=(max_x / 100,  max_y / 100))
+            plt.imshow(image, aspect='auto')
+
             img_XY_plane: ImageCanvas = ImageCanvas(max_y, max_x)
             height = data[row]["origHeight"]
             ht_scale = height / max_x
@@ -604,22 +609,15 @@ class Markimg(ChrisApp):
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left=False, right=False, labelleft=False,
                             labelbottom=False, bottom=False)
-
-            plt.imshow(image)
-            plt.savefig(os.path.join("/tmp", row + "img.png"), bbox_inches='tight', pad_inches=0.0)
-            tmppng = cv2.imread(os.path.join("/tmp", row + "img.png"))
-            y, x, z = tmppng.shape
-            dpi = (max_x / x) * 100
-            LOG(f"Input image dimensions {image.shape}")
-            LOG(f'Applying DPI {dpi} to the output image')
-
-            plt.savefig(os.path.join("/tmp", row + ".png"), dpi=dpi, bbox_inches='tight', pad_inches=0.0)
+            plt.savefig(os.path.join("/tmp", row + "img.jpg"), bbox_inches='tight', pad_inches=0.0)
             plt.clf()
-            png = cv2.imread(os.path.join("/tmp", row + ".png"))
-            inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
 
-            LOG(f"Output image dimensions {png.shape}")
-            cv2.imwrite(os.path.join(options.outputdir, row + ".png"), inverted_png)
+            png = cv2.imread(os.path.join("/tmp", row + "img.jpg"))
+
+            inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
+            LOG(f"Output image dimensions {image.shape}")
+            LOG(f"Output image dimensions {inverted_png.shape}")
+            cv2.imwrite(os.path.join(options.outputdir, row + ".jpg"), inverted_png)
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
                            'pixel_distance': d_pixel, 'details': details}
 
