@@ -359,6 +359,13 @@ class Markimg(ChrisApp):
                           optional=True,
                           help='Offset of additional text on the final output,'
                                'default value is 0,0')
+        self.add_argument('--outputImageExtension',
+                          dest='outputImageExtension',
+                          default='jpg',
+                          type=str,
+                          optional=True,
+                          help='Generated output image file extension,'
+                               'default value is jpg')
 
     def preamble_show(self, options) -> None:
         """
@@ -421,7 +428,7 @@ class Markimg(ChrisApp):
             plt.axis('off')
 
             max_y, max_x, max_z = image.shape
-            plt.figure(figsize=(max_x / 100,  max_y / 100))
+            plt.figure(figsize=(max_x / 100, max_y / 100))
             plt.imshow(image, aspect='auto')
 
             img_XY_plane: ImageCanvas = ImageCanvas(max_y, max_x)
@@ -509,7 +516,8 @@ class Markimg(ChrisApp):
                             self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[0]
 
             femurDiffText = 'Difference'.rjust(16) + f': {femurDiffInfo}'
-            d_femur['Difference'] = femurDiffInfo + self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[1]
+            d_femur['Difference'] = femurDiffInfo + \
+                                    self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[1]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -532,7 +540,8 @@ class Markimg(ChrisApp):
                             self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[0]
 
             tibaiDiffText = 'Difference'.rjust(16) + f': {tibiaDiffInfo}'
-            d_tibia['Difference'] = tibiaDiffInfo + self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[1]
+            d_tibia['Difference'] = tibiaDiffInfo + \
+                                    self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[1]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -541,13 +550,13 @@ class Markimg(ChrisApp):
 
             d_total = {}
             totalRightInfo = 'Total right'.rjust(16) + \
-                f": {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}"
+                             f": {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}"
             d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
             totalLeftInfo = 'Total left'.rjust(16) + \
-                f": {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}"
+                            f": {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}"
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
@@ -615,9 +624,10 @@ class Markimg(ChrisApp):
             png = cv2.imread(os.path.join("/tmp", row + "img.jpg"))
 
             inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
-            LOG(f"Output image dimensions {image.shape}")
+            LOG(f"Input image dimensions {image.shape}")
             LOG(f"Output image dimensions {inverted_png.shape}")
-            cv2.imwrite(os.path.join(options.outputdir, row + ".jpg"), inverted_png)
+            cv2.imwrite(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"), inverted_png)
+
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
                            'pixel_distance': d_pixel, 'details': details}
 
