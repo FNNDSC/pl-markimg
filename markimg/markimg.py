@@ -632,7 +632,7 @@ class Markimg(ChrisApp):
             resized_image = tmpimg.resize((target_width, target_height))
 
             # Rotate the image by 90 degrees
-            rotated_image = resized_image.rotate(-90)
+            rotated_image = resized_image.rotate(-90, expand=True)
 
             # Save the resized image
             rotated_image.save(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"))
