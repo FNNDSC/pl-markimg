@@ -13,8 +13,8 @@ import json
 import math
 import os
 import sys
-from PIL import Image
 import cv2
+from PIL import Image
 import matplotlib
 import matplotlib.pyplot as plt
 from chrisapp.base import ChrisApp
@@ -423,14 +423,15 @@ class Markimg(ChrisApp):
 
             LOG(f"Reading input image from {file_path[0]}")
             image = cv2.imread(file_path[0])
+            #image = Image.open(file_path[0])
 
             plt.style.use('dark_background')
             plt.axis('off')
 
-            max_y, max_x, max_z = image.shape
+            max_y, max_x, RGB = image.shape
+            #max_x, max_y = image.size
             plt.figure(figsize=(max_x / 100, max_y / 100))
-            plt.imshow(image, aspect='auto')
-
+            plt.imshow(image)
             img_XY_plane: ImageCanvas = ImageCanvas(max_y, max_x)
             height = data[row]["origHeight"]
             ht_scale = height / max_x
@@ -610,10 +611,6 @@ class Markimg(ChrisApp):
                 offset_x = int(offset[1])
                 x_pos, y_pos = img_XY_plane.add_offset(-offset_x, -offset_y)
 
-            # y_pos = y_pos - line_gap
-
-            # plt.text(x_pos, y_pos, options.addText, color=options.addTextColor, fontsize=options.addTextSize,
-            #         rotation=rotation)
 
             # Clean up all matplotlib stuff and save as PNG
             plt.tick_params(left=False, right=False, labelleft=False,
@@ -621,12 +618,33 @@ class Markimg(ChrisApp):
             plt.savefig(os.path.join("/tmp", row + "img.jpg"), bbox_inches='tight', pad_inches=0.0)
             plt.clf()
 
-            png = cv2.imread(os.path.join("/tmp", row + "img.jpg"))
+            # Open an existing image
+            tmpimg = Image.open(os.path.join("/tmp", row + "img.jpg"))
+            x,y = tmpimg.size
+            # Calculate the aspect ratio
+            aspect_ratio = max_x /x
 
-            inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
+            # Define the target width
+            target_width = int(x * aspect_ratio)
+            target_height = int(y * aspect_ratio)
+
+            # Resize the image
+            resized_image = tmpimg.resize((target_width, target_height))
+
+            # Rotate the image by 90 degrees
+            rotated_image = resized_image.rotate(-90)
+
+            # Save the resized image
+            rotated_image.save(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"))
             LOG(f"Input image dimensions {image.shape}")
-            LOG(f"Output image dimensions {inverted_png.shape}")
-            cv2.imwrite(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"), inverted_png)
+            LOG(f"Output image dimensions {rotated_image.size}")
+
+            # png = cv2.imread(os.path.join("/tmp", row + "img.jpg"))
+            #
+            # inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
+            # LOG(f"Input image dimensions {image.shape}")
+            # LOG(f"Output image dimensions {inverted_png.shape}")
+            # cv2.imwrite(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"), inverted_png)
 
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
                            'pixel_distance': d_pixel, 'details': details}
