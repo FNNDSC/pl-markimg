@@ -120,7 +120,7 @@ jobs:
           docker pull localhost:5000/$dock_image
           docker tag localhost:5000/$dock_image $dock_image
           script=$(docker inspect --format '{{ (index .Config.Cmd 0) }}' $dock_image)
-          json="$(docker run --rm $dock_image $script --json)"
+          docker run --rm $dock_image $script --json > /tmp/description.json
           jq <<< "$json"  # pretty print in log
 
           echo "::set-output name=json::$json"
