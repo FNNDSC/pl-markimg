@@ -432,7 +432,13 @@ class Markimg(ChrisApp):
             #max_x, max_y = image.size
             fig = plt.figure(figsize=(max_x / 100, max_y / 100))
             plt.imshow(image)
+
+            # autoscale text sizes w.r.t. image
             options.textSize = fig.get_size_inches()[0] * options.textSize
+            options.addTextSize = fig.get_size_inches()[0] * options.addTextSize
+            options.lineGap = fig.get_size_inches()[0] * options.lineGap
+            options.pointSize = fig.get_size_inches()[0] * options.pointSize
+
             img_XY_plane: ImageCanvas = ImageCanvas(max_y, max_x)
             height = data[row]["origHeight"]
             ht_scale = height / max_x
