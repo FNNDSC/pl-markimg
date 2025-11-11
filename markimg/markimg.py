@@ -411,6 +411,7 @@ class Markimg(ChrisApp):
         d_lines = {}
         d_lengths = {}
         d_json = {}
+        report_json = {}
         row = ""
         for row in data:
 
@@ -445,6 +446,7 @@ class Markimg(ChrisApp):
 
             info = data[row]['info']
             details = data[row]['details']
+            report_json.update(details)
 
             items = data[row]["landmarks"]
             for item in items:
@@ -501,6 +503,7 @@ class Markimg(ChrisApp):
                 x_pos = x_pos + line_gap
                 display_text = f"{field.rjust(16)}: {str(info[field])}"
                 d_info[field] = info[field]
+                report_json[field] = info[field]
                 plt.text(x_pos, y_pos, display_text, color='white', fontsize=options.textSize, rotation=90)
 
             # Print some blank lines
@@ -512,11 +515,13 @@ class Markimg(ChrisApp):
             # Print specific details about the image
             rightFemurInfo = 'Right femur'.rjust(16) + f": {str(d_lengths['Right femur'])} {unit}"
             d_femur['Right femur'] = str(d_lengths['Right femur']) + f' {unit}'
+            report_json["FEMUR RIGHT"] = str(d_lengths['Right femur'])
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
             leftFemurInfo = 'Left femur'.rjust(16) + f": {str(d_lengths['Left femur'])} {unit}"
             d_femur['Left femur'] = str(d_lengths['Left femur']) + f' {unit}'
+            report_json["FEMUR LEFT"] = str(d_lengths['Left femur'])
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftFemurInfo, color='white', fontsize=options.textSize, rotation=90)
 
@@ -526,6 +531,9 @@ class Markimg(ChrisApp):
             femurDiffText = 'Difference'.rjust(16) + f': {femurDiffInfo}'
             d_femur['Difference'] = femurDiffInfo + \
                                     self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[1]
+            report_json["FEMUR DIFF"] = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur']))
+            report_json["FEMUR LATERALITY"] = self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(' ')[0].upper()
+
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -536,11 +544,13 @@ class Markimg(ChrisApp):
             d_tibia = {}
             rightTibiaInfo = 'Right tibia'.rjust(16) + f": {str(d_lengths['Right tibia'])} {unit}"
             d_tibia['Right tibia'] = str(d_lengths['Right tibia']) + f' {unit}'
+            report_json["TIBIA RIGHT"] = str(d_lengths['Right tibia'])
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, rightTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
             leftTibiaInfo = 'Left tibia'.rjust(16) + f": {str(d_lengths['Left tibia'])} {unit}"
             d_tibia['Left tibia'] = str(d_lengths['Left tibia']) + f' {unit}'
+            report_json["TIBIA LEFT"] = str(d_lengths['Left tibia'])
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, leftTibiaInfo, color='white', fontsize=options.textSize, rotation=90)
 
@@ -550,6 +560,8 @@ class Markimg(ChrisApp):
             tibaiDiffText = 'Difference'.rjust(16) + f': {tibiaDiffInfo}'
             d_tibia['Difference'] = tibiaDiffInfo + \
                                     self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[1]
+            report_json["TIBIA DIFF"] = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia']))
+            report_json["TIBIA LATERALITY"] = self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(' ')[0].upper()
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -560,12 +572,14 @@ class Markimg(ChrisApp):
             totalRightInfo = 'Total right'.rjust(16) + \
                              f": {str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))} {unit}"
             d_total['Total right'] = str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia'])) + f' {unit}'
+            report_json["TOTAL RIGHT"] =str(self.getSum(d_lengths['Right femur'], d_lengths['Right tibia']))
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalRightInfo, color='white', fontsize=options.textSize, rotation=90)
 
             totalLeftInfo = 'Total left'.rjust(16) + \
                             f": {str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))} {unit}"
             d_total['Total left'] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia'])) + f' {unit}'
+            report_json["TOTAL LEFT"] = str(self.getSum(d_lengths['Left femur'], d_lengths['Left tibia']))
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalLeftInfo, color='white', fontsize=options.textSize, rotation=90)
 
@@ -577,6 +591,8 @@ class Markimg(ChrisApp):
             totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp.split(':')[0]
             totalDiffText = 'Total difference'.rjust(16) + f': {totalDiffInfo}'
             d_total['Difference'] = totalDiffInfo + totalComp.split(':')[1]
+            report_json["TOTAL DIFF"] = str(totalDiff)
+            report_json["TOTAL LATERALITY"] = totalComp.split(' ')[0].upper()
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -646,22 +662,20 @@ class Markimg(ChrisApp):
             LOG(f"Input image dimensions {image.shape}")
             LOG(f"Output image dimensions {rotated_image.size}")
 
-            # png = cv2.imread(os.path.join("/tmp", row + "img.jpg"))
-            #
-            # inverted_png = cv2.rotate(png, cv2.ROTATE_90_CLOCKWISE)
-            # LOG(f"Input image dimensions {image.shape}")
-            # LOG(f"Output image dimensions {inverted_png.shape}")
-            # cv2.imwrite(os.path.join(options.outputdir, row + f".{options.outputImageExtension}"), inverted_png)
 
             d_json[row] = {'info': d_info, 'femur': d_femur, 'tibia': d_tibia, 'total': d_total,
                            'pixel_distance': d_pixel, 'details': details}
 
         jsonFilePath = os.path.join(options.outputdir, f'{row}-analysis.json')
+        report_file_path = os.path.join(options.outputdir, f'{row}-report.json')
         # Open a json writer, and use the json.dumps()
         # function to dump data
         LOG("Saving %s" % jsonFilePath)
         with open(jsonFilePath, 'w', encoding='utf-8') as jsonf:
             jsonf.write(json.dumps(d_json, indent=4))
+        LOG("Saving report as %s" % report_file_path)
+        with open(report_file_path, 'w', encoding='utf-8') as jsonf:
+            jsonf.write(json.dumps(report_json, indent=4))
 
     def show_man_page(self):
         """
