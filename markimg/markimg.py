@@ -19,7 +19,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 from chrisapp.base import ChrisApp
 from loguru import logger
-from pflog import pflog
 from markimg.imageCanvas import ImageCanvas
 import numpy as np
 
@@ -385,10 +384,6 @@ class Markimg(ChrisApp):
             LOG("%25s:  [%s]" % (k, v))
         LOG("")
 
-    @pflog.tel_logTime(
-        event='markimg',
-        log='Draw line segments between landmark points on an input image'
-    )
     def run(self, options):
         """
         Define the code to be run by this plugin app.
@@ -531,8 +526,8 @@ class Markimg(ChrisApp):
             femurDiffText = 'Difference'.rjust(16) + f': {femurDiffInfo}'
             d_femur['Difference'] = femurDiffInfo + \
                                     self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(':')[1]
-            report_json["FEMUR DIFF"] = str(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur']))
-            report_json["FEMUR LATERALITY"] = self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(' ')[0].upper()
+            report_json["FEMUR DIFF"] = str(float(self.getDiff(d_lengths['Right femur'], d_lengths['Left femur'])))
+            report_json["FEMUR LATERALITY"] = self.compareLength(d_lengths['Left femur'], d_lengths['Right femur']).split(' ')[0]
 
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, femurDiffText, color='white', fontsize=options.textSize, rotation=90)
@@ -560,8 +555,8 @@ class Markimg(ChrisApp):
             tibaiDiffText = 'Difference'.rjust(16) + f': {tibiaDiffInfo}'
             d_tibia['Difference'] = tibiaDiffInfo + \
                                     self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(':')[1]
-            report_json["TIBIA DIFF"] = str(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia']))
-            report_json["TIBIA LATERALITY"] = self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(' ')[0].upper()
+            report_json["TIBIA DIFF"] = str(float(self.getDiff(d_lengths['Right tibia'], d_lengths['Left tibia'])))
+            report_json["TIBIA LATERALITY"] = self.compareLength(d_lengths['Left tibia'], d_lengths['Right tibia']).split(' ')[0]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, tibaiDiffText, color='white', fontsize=options.textSize, rotation=90)
 
@@ -591,8 +586,8 @@ class Markimg(ChrisApp):
             totalDiffInfo = str(totalDiff) + f' {unit}, ' + totalComp.split(':')[0]
             totalDiffText = 'Total difference'.rjust(16) + f': {totalDiffInfo}'
             d_total['Difference'] = totalDiffInfo + totalComp.split(':')[1]
-            report_json["TOTAL DIFF"] = str(totalDiff)
-            report_json["TOTAL LATERALITY"] = totalComp.split(' ')[0].upper()
+            report_json["TOTAL DIFF"] = str(float(totalDiff))
+            report_json["TOTAL LATERALITY"] = totalComp.split(' ')[0]
             x_pos = x_pos + line_gap
             plt.text(x_pos, y_pos, totalDiffText, color='white', fontsize=options.textSize, rotation=90)
 
